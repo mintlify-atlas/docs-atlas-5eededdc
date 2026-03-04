@@ -1,0 +1,91 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Holy Time",
+  "projectDescription": "Type-safe date and time manipulation library for JavaScript and TypeScript",
+  "theme": "mint",
+  "primaryColor": "#94cb04",
+  "lightColor": "#545454",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/time-objects",
+              "concepts/durations",
+              "concepts/formatting",
+              "concepts/timezones"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/date-manipulation",
+              "guides/comparisons",
+              "guides/relative-time",
+              "guides/examples"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Classes",
+            "pages": [
+              "api/holytime",
+              "api/holyduration"
+            ]
+          },
+          {
+            "group": "Types & Constants",
+            "pages": [
+              "api/types",
+              "api/constants"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Type-safe API with full TypeScript support",
+    "Fluent chainable interface for time manipulation",
+    "Duration calculations and formatting",
+    "Comprehensive timezone support",
+    "Date arithmetic (add, subtract, between)",
+    "Date comparisons and validation",
+    "Flexible formatting with custom patterns",
+    "Relative time expressions"
+  ],
+  "publicApiSurface": [
+    "HolyTime.now()",
+    "HolyTime.add()",
+    "HolyTime.subtract()",
+    "HolyTime.in()",
+    "HolyTime.between()",
+    "HolyTime.format()",
+    "HolyTime.startOf()",
+    "HolyTime.endOf()",
+    "HolyTime.isAfter()",
+    "HolyTime.isBefore()",
+    "HolyTime.isSame()",
+    "HolyTime.isWeekend()",
+    "HolyTime.isLeapYear()",
+    "HolyTime.max()",
+    "HolyTime.min()",
+    "HolyTime.duration()",
+    "HolyDuration.add()",
+    "HolyDuration.subtract()",
+    "HolyDuration.in()",
+    "HolyDuration.format()"
+  ]
+}
