@@ -1,0 +1,137 @@
+---
+title: Installation
+description: Install and configure Holy Time in your JavaScript or TypeScript project
+---
+
+# Installation
+
+Get started with Holy Time by installing it via your preferred package manager.
+
+## Package Managers
+
+<CodeGroup>
+```bash npm
+npm install holy-time
+```
+
+```bash yarn
+yarn add holy-time
+```
+
+```bash pnpm
+pnpm add holy-time
+```
+</CodeGroup>
+
+<Note>
+Holy Time has zero dependencies, so the installation is lightweight and fast.
+</Note>
+
+## Importing the Library
+
+Once installed, you can import Holy Time in your project:
+
+<CodeGroup>
+```ts ES Modules
+import HolyTime from 'holy-time'
+import { HolyDuration } from 'holy-time'
+import type { TimeResolvable, HumanUnit, IntervalUnit } from 'holy-time'
+```
+
+```js CommonJS
+const HolyTime = require('holy-time').default
+const { HolyDuration } = require('holy-time')
+```
+</CodeGroup>
+
+### Available Exports
+
+Holy Time exports the following:
+
+- **`HolyTime`** (default export) - The main class for date/time manipulation
+- **`HolyDuration`** - Class for working with time durations
+- **`TimeResolvable`** (type) - Accepts `HolyTime`, `Date`, `number`, or `string`
+- **`HumanUnit`** (type) - Time units: `'milliseconds'`, `'seconds'`, `'minutes'`, `'hours'`, `'days'`, `'weeks'`, `'months'`, `'years'`
+- **`IntervalUnit`** (type) - Singular time units for intervals
+- **`TimeZone`** (type) - Valid timezone strings
+
+## TypeScript Configuration
+
+<Steps>
+  <Step title="Ensure TypeScript is configured">
+    Holy Time is written in TypeScript and includes type definitions out of the box. Make sure your `tsconfig.json` is properly configured:
+
+    ```json tsconfig.json
+    {
+      "compilerOptions": {
+        "target": "ES2015",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Enable strict mode (recommended)">
+    For the best type safety experience, enable strict mode in your TypeScript configuration:
+
+    ```json tsconfig.json
+    {
+      "compilerOptions": {
+        "strict": true
+      }
+    }
+    ```
+
+    <Tip>
+    Holy Time takes full advantage of TypeScript's type system to provide excellent autocomplete and type checking.
+    </Tip>
+  </Step>
+
+  <Step title="Start using Holy Time">
+    You're all set! The type definitions are automatically available when you import the library:
+
+    ```ts
+    import HolyTime from 'holy-time'
+    
+    // Full type safety and autocomplete support
+    const tomorrow = HolyTime.in(1, 'days') // HolyTime
+    const isWeekend = tomorrow.isWeekend() // boolean
+    ```
+  </Step>
+</Steps>
+
+## Module Formats
+
+Holy Time supports both CommonJS and ES Modules:
+
+- **ES Module**: `./dist/index.mjs`
+- **CommonJS**: `./dist/index.js`
+- **TypeScript Types**: `./dist/index.d.ts`
+
+Your bundler or runtime will automatically select the appropriate format based on your environment.
+
+## Verification
+
+Verify your installation by running a simple test:
+
+```ts test.ts
+import HolyTime from 'holy-time'
+
+const now = HolyTime.now()
+console.log(now.format('YYYY-MM-DD HH:mm:ss'))
+// Output: 2026-03-04 14:30:45 (current date/time)
+```
+
+<Tip>
+If you encounter any issues during installation, make sure you're using Node.js version 14 or higher.
+</Tip>
+
+## Next Steps
+
+<Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+  Learn how to use Holy Time with practical examples
+</Card>

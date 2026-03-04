@@ -1,0 +1,264 @@
+---
+title: Date Manipulation
+description: Learn how to add, subtract, and manipulate dates with Holy Time
+---
+
+# Date Manipulation
+
+Holy Time provides powerful methods for manipulating dates with a clean, chainable API.
+
+## Adding Time
+
+The `add()` method allows you to add time units to a date. It supports both static and instance usage.
+
+### Basic Usage
+
+```typescript
+import HolyTime from 'holy-time'
+
+const date = new HolyTime('2023-01-01T00:00:00.000Z')
+date.add(2, 'hours')
+// Result: 2023-01-01T02:00:00.000Z
+```
+
+### Static Method
+
+```typescript
+const result = HolyTime.add('2023-01-01', 2, 'weeks')
+```
+
+<Tip>
+The `add()` instance method modifies the original object and returns `this`, allowing for method chaining.
+</Tip>
+
+### Supported Units
+
+You can add any of these time units:
+- `'milliseconds'`
+- `'seconds'`
+- `'minutes'`
+- `'hours'`
+- `'days'`
+- `'weeks'`
+- `'months'`
+- `'years'`
+
+### Boundary Handling
+
+<CodeGroup>
+```typescript Day Boundary
+const date = new HolyTime('2023-01-01T23:00:00.000Z')
+date.add(2, 'hours')
+// Result: 2023-01-02T01:00:00.000Z
+```
+
+```typescript Month Boundary
+const date = new HolyTime('2023-01-31T23:00:00.000Z')
+date.add(2, 'hours')
+// Result: 2023-02-01T01:00:00.000Z
+```
+
+```typescript Year Boundary
+const date = new HolyTime('2023-12-31T23:00:00.000Z')
+date.add(2, 'hours')
+// Result: 2024-01-01T01:00:00.000Z
+```
+
+```typescript Leap Year
+const date = new HolyTime('2024-02-28T00:00:00.000Z')
+date.add(1, 'days')
+// Result: 2024-02-29T00:00:00.000Z
+```
+</CodeGroup>
+
+## Subtracting Time
+
+The `subtract()` method works identically to `add()`, but subtracts time instead.
+
+```typescript
+const date = new HolyTime('2023-01-01T01:00:00.000Z')
+date.subtract(60, 'minutes')
+// Result: 2023-01-01T00:00:00.000Z
+```
+
+### Static Method
+
+```typescript
+const result = HolyTime.subtract('2023-01-01', 2, 'weeks')
+```
+
+<Tip>
+Negative values in `add()` work the same as `subtract()`, and vice versa.
+</Tip>
+
+## Future Dates with `in()`
+
+Create a date in the future from the current moment:
+
+```typescript
+const futureDate = HolyTime.in(4, 'days')
+// Creates a date 4 days from now
+```
+
+This is equivalent to:
+```typescript
+const futureDate = HolyTime.now().add(4, 'days')
+```
+
+## Next Period
+
+Get the next occurrence of a time period:
+
+```typescript
+const nextWeek = HolyTime.next('week')
+const nextMonth = HolyTime.next('month')
+const nextYear = HolyTime.next('year')
+```
+
+### Instance Method
+
+```typescript
+const date = new HolyTime('2023-01-15')
+const nextMonth = date.next('month')
+// Returns start of next month after Jan 15
+```
+
+### With Timezone
+
+```typescript
+const next = HolyTime.next('day', new Date(), 'America/New_York')
+```
+
+## Start and End of Period
+
+### Start of Period
+
+Get the beginning of a time period:
+
+```typescript
+const date = new HolyTime('2023-01-15T14:30:45.000Z')
+
+date.startOf('hour')   // 2023-01-15T14:00:00.000Z
+date.startOf('day')    // 2023-01-15T00:00:00.000Z
+date.startOf('week')   // 2023-01-15T00:00:00.000Z (Sunday)
+date.startOf('month')  // 2023-01-01T00:00:00.000Z
+date.startOf('year')   // 2023-01-01T00:00:00.000Z
+```
+
+### End of Period
+
+Get the last moment of a time period:
+
+```typescript
+const date = new HolyTime('2023-01-01T01:02:03.000Z')
+
+const endOfDay = date.endOf('day')
+// Returns: 2023-01-01T23:59:59.999Z
+```
+
+### Timezone Support
+
+Both methods support timezone parameters:
+
+<CodeGroup>
+```typescript Start of Day (NY)
+const date = new HolyTime('2023-01-01T01:02:03.000Z')
+const start = date.startOf('day', 'America/New_York')
+start.format('YYYY-MM-DD HH:mm:ss', 'Europe/London')
+// Result: 2022-12-31 05:00:00
+```
+
+```typescript Start of Week (London)
+const date = new HolyTime('2023-01-01T01:02:03.000Z')
+const start = date.startOf('week', 'Europe/London')
+start.format('YYYY-MM-DD HH:mm:ss')
+// Result: 2023-01-01 00:00:00
+```
+</CodeGroup>
+
+## Chaining Operations
+
+<Steps>
+  <Step title="Create a base date">
+    ```typescript
+    const date = HolyTime.in(4, 'days')
+    ```
+  </Step>
+  
+  <Step title="Add more time">
+    ```typescript
+    date.add(2, 'weeks')
+    ```
+  </Step>
+  
+  <Step title="Subtract time">
+    ```typescript
+    date.subtract(4, 'minutes')
+    ```
+  </Step>
+  
+  <Step title="Check the result">
+    ```typescript
+    date.isWeekend() // true or false
+    ```
+  </Step>
+</Steps>
+
+Complete example:
+
+```typescript
+HolyTime
+  .in(4, 'days')
+  .add(2, 'weeks')
+  .subtract(4, 'minutes')
+  .isWeekend()
+```
+
+## Setting Specific Values
+
+Directly set a specific unit value:
+
+```typescript
+const date = new HolyTime('2023-01-15T14:30:00.000Z')
+
+date.set('hour', 9)    // Sets hour to 9
+date.set('day', 1)     // Sets day to 1st
+date.set('month', 6)   // Sets month to June (1-indexed)
+date.set('year', 2024) // Sets year to 2024
+```
+
+## Getting Values
+
+Retrieve specific date components:
+
+```typescript
+const date = new HolyTime('2023-06-15T14:30:45.123Z')
+
+date.get('year')        // 2023
+date.get('month')       // 6
+date.get('day')         // 15
+date.get('hour')        // 14
+date.get('minute')      // 30
+date.get('second')      // 45
+date.get('millisecond') // 123
+```
+
+### Get All Values
+
+```typescript
+const all = date.get('object')
+// Returns: {
+//   year: 2023,
+//   month: 6,
+//   day: 15,
+//   hour: 14,
+//   minute: 30,
+//   second: 45,
+//   millisecond: 123,
+//   week: 24
+// }
+```
+
+<Tip>
+All `get()` operations support an optional timezone parameter: `date.get('hour', 'America/New_York')`
+</Tip>

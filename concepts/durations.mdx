@@ -1,0 +1,314 @@
+---
+title: Durations
+description: Work with time intervals using the HolyDuration class
+---
+
+# Durations
+
+The `HolyDuration` class represents a length of time, providing methods for duration arithmetic and formatting.
+
+## Creating Durations
+
+### Using HolyTime.duration()
+
+The recommended way to create durations is through the static `HolyTime.duration()` method:
+
+```typescript
+import { HolyTime } from 'holy-time';
+
+// Create a 5-minute duration
+const fiveMinutes = HolyTime.duration(5, 'minutes');
+
+// Create a 2-hour duration
+const twoHours = HolyTime.duration(2, 'hours');
+
+// Create a 30-second duration
+const thirtySeconds = HolyTime.duration(30, 'seconds');
+
+// Default unit is milliseconds
+const milliseconds = HolyTime.duration(5000);
+```
+
+### From the Constructor
+
+You can also create durations directly using the `HolyDuration` constructor:
+
+```typescript
+import { HolyDuration } from 'holy-time';
+
+// From milliseconds
+const duration = new HolyDuration(60000); // 1 minute
+
+// From another duration
+const copy = new HolyDuration(duration);
+```
+
+### From Time Differences
+
+Calculate durations between two times:
+
+<ParamField path="HolyTime.between()" type="(timeA: TimeResolvable, timeB: TimeResolvable) => HolyDuration">
+  Returns the absolute duration between two times.
+</ParamField>
+
+```typescript
+const start = new Date('2024-01-01');
+const end = new Date('2024-12-31');
+
+const duration = HolyTime.between(start, end);
+```
+
+<ParamField path="HolyTime.since()" type="(time: TimeResolvable) => HolyDuration">
+  Returns the duration from the given time until now.
+</ParamField>
+
+```typescript
+const birthday = new Date('2000-01-01');
+const age = HolyTime.since(birthday);
+
+console.log(age.in('years')); // Age in years
+```
+
+## Duration Arithmetic
+
+### Adding Durations
+
+<ParamField path="add()" type="(duration: HolyDuration) => this">
+  Adds another duration to this duration.
+</ParamField>
+
+<ParamField path="add()" type="(amount: number, unit?: HumanUnit) => this">
+  Adds a specific amount of time to this duration.
+</ParamField>
+
+```typescript
+const duration = HolyTime.duration(1, 'hours');
+
+// Add another duration
+const other = HolyTime.duration(30, 'minutes');
+duration.add(other); // 1.5 hours total
+
+// Add amount and unit
+duration.add(15, 'minutes'); // 1.75 hours total
+```
+
+### Subtracting Durations
+
+<ParamField path="subtract()" type="(duration: HolyDuration) => this">
+  Subtracts another duration from this duration.
+</ParamField>
+
+<ParamField path="subtract()" type="(amount: number, unit?: HumanUnit) => this">
+  Subtracts a specific amount of time from this duration.
+</ParamField>
+
+```typescript
+const duration = HolyTime.duration(2, 'hours');
+
+// Subtract another duration
+const toRemove = HolyTime.duration(30, 'minutes');
+duration.subtract(toRemove); // 1.5 hours
+
+// Subtract amount and unit
+duration.subtract(15, 'minutes'); // 1.25 hours
+```
+
+<Note>
+  Both `add()` and `subtract()` methods are chainable and modify the duration in place.
+</Note>
+
+## Converting Between Units
+
+<ParamField path="in()" type="(unit: HumanUnit) => number">
+  Converts the duration to the specified unit and returns the numeric value.
+</ParamField>
+
+```typescript
+const duration = HolyTime.duration(90, 'minutes');
+
+duration.in('hours');        // 1.5
+duration.in('minutes');      // 90
+duration.in('seconds');      // 5400
+duration.in('milliseconds'); // 5400000
+```
+
+### Supported Units
+
+All methods accept these human-readable units:
+
+- `'milliseconds'`
+- `'seconds'`
+- `'minutes'`
+- `'hours'`
+- `'days'`
+- `'weeks'`
+- `'months'`
+- `'years'`
+
+<Info>
+  Month and year durations use approximate values: 1 month = 2,678,400,000ms (~31 days), 1 year = 31,536,000,000ms (365 days).
+</Info>
+
+## Formatting Durations
+
+<ParamField path="format()" type="(type?: 'short' | 'long', allowedSegments?: Partial<Record<HumanUnit, boolean>>) => string">
+  Formats the duration as a human-readable string.
+</ParamField>
+
+### Short Format
+
+The short format uses abbreviated units:
+
+```typescript
+const duration = HolyTime.duration(3725, 'seconds');
+
+duration.format('short');
+// '1h 2m 5s'
+```
+
+### Long Format
+
+The long format uses full unit names with proper pluralization:
+
+```typescript
+const duration = HolyTime.duration(3725, 'seconds');
+
+duration.format('long');
+// '1 hour, 2 minutes and 5 seconds'
+```
+
+### Filtering Segments
+
+You can control which time units appear in the output:
+
+```typescript
+const duration = HolyTime.duration(3661, 'seconds');
+
+// Only show hours and minutes
+duration.format('short', {
+  hours: true,
+  minutes: true,
+  seconds: false
+});
+// '1h 1m'
+
+// Only show days and hours
+const longDuration = HolyTime.duration(100, 'hours');
+longDuration.format('long', {
+  days: true,
+  hours: true,
+  minutes: false,
+  seconds: false
+});
+// '4 days and 4 hours'
+```
+
+<Tabs>
+  <Tab title="Short Format">
+    ```typescript
+    const d1 = HolyTime.duration(125, 'seconds');
+    d1.format('short'); // '2m 5s'
+
+    const d2 = HolyTime.duration(2, 'days');
+    d2.format('short'); // '2d'
+
+    const d3 = HolyTime.duration(90, 'minutes');
+    d3.format('short'); // '1h 30m'
+    ```
+  </Tab>
+  <Tab title="Long Format">
+    ```typescript
+    const d1 = HolyTime.duration(125, 'seconds');
+    d1.format('long'); // '2 minutes and 5 seconds'
+
+    const d2 = HolyTime.duration(2, 'days');
+    d2.format('long'); // '2 days'
+
+    const d3 = HolyTime.duration(90, 'minutes');
+    d3.format('long'); // '1 hour and 30 minutes'
+    ```
+  </Tab>
+</Tabs>
+
+## Cloning Durations
+
+<ParamField path="clone()" type="() => HolyDuration">
+  Creates a copy of the current duration.
+</ParamField>
+
+```typescript
+const original = HolyTime.duration(1, 'hours');
+const copy = original.clone();
+
+copy.add(30, 'minutes');
+// original is still 1 hour
+// copy is now 1.5 hours
+```
+
+<Warning>
+  Duration methods like `add()` and `subtract()` are mutable. Use `clone()` if you need to preserve the original duration.
+</Warning>
+
+## Practical Examples
+
+### Calculate Age
+
+```typescript
+const birthday = new Date('1990-05-15');
+const age = HolyTime.since(birthday);
+
+console.log(`You are ${Math.floor(age.in('years'))} years old`);
+```
+
+### Track Session Duration
+
+```typescript
+const sessionStart = HolyTime.now();
+
+// ... some time passes ...
+
+const sessionDuration = HolyTime.since(sessionStart);
+console.log(`Session lasted: ${sessionDuration.format('long')}`);
+```
+
+### Calculate Time Until Event
+
+```typescript
+const event = new Date('2024-12-31T23:59:59');
+const now = new Date();
+const timeLeft = HolyTime.between(now, event);
+
+console.log(`Event starts in: ${timeLeft.format('long', {
+  days: true,
+  hours: true,
+  minutes: false,
+  seconds: false
+})}`);
+```
+
+### Sum Multiple Durations
+
+```typescript
+const workout = HolyTime.duration(45, 'minutes');
+const commute = HolyTime.duration(30, 'minutes');
+const meeting = HolyTime.duration(2, 'hours');
+
+const total = HolyTime.duration(0)
+  .add(workout)
+  .add(commute)
+  .add(meeting);
+
+console.log(`Total time: ${total.format('long')}`);
+// 'Total time: 3 hours and 15 minutes'
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Time Objects" icon="clock" href="/concepts/time-objects">
+    Learn about creating and manipulating times
+  </Card>
+  <Card title="Formatting" icon="calendar" href="/concepts/formatting">
+    Format dates with custom patterns
+  </Card>
+</CardGroup>

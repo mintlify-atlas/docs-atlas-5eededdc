@@ -1,0 +1,146 @@
+---
+title: Constants
+description: Constant values and lookup tables used by Holy Time
+---
+
+## TimeUnits
+
+```typescript
+const TimeUnits = {
+  YEAR: 31_536_000_000,
+  MONTH: 2_678_400_000,
+  WEEK: 604_800_000,
+  DAY: 86_400_000,
+  HOUR: 3_600_000,
+  MINUTE: 60_000,
+  SECOND: 1000,
+  MILLISECOND: 1,
+} as const
+```
+
+Object containing time unit conversion values in milliseconds.
+
+**Values:**
+- `YEAR` - 31,536,000,000 ms (365 days)
+- `MONTH` - 2,678,400,000 ms (31 days)
+- `WEEK` - 604,800,000 ms (7 days)
+- `DAY` - 86,400,000 ms (24 hours)
+- `HOUR` - 3,600,000 ms (60 minutes)
+- `MINUTE` - 60,000 ms (60 seconds)
+- `SECOND` - 1,000 ms
+- `MILLISECOND` - 1 ms
+
+**Usage:**
+```typescript
+import { HolyTime } from 'holytime'
+
+HolyTime.Units.DAY // 86400000
+HolyTime.Units.HOUR // 3600000
+```
+
+## TIMEZONES
+
+```typescript
+const TIMEZONES = [
+  'Africa/Abidjan',
+  'Africa/Accra',
+  'Africa/Addis_Ababa',
+  // ... (495 total timezones)
+  'Pacific/Wake',
+  'Pacific/Wallis',
+  'UTC',
+] as const
+```
+
+Array of all supported IANA timezone identifiers.
+
+**Total count:** 495 timezones
+
+**Major timezones include:**
+- Africa/* (53 zones)
+- America/* (176 zones)
+- Antarctica/* (10 zones)
+- Arctic/* (1 zone)
+- Asia/* (83 zones)
+- Atlantic/* (10 zones)
+- Australia/* (12 zones)
+- Europe/* (60 zones)
+- Indian/* (10 zones)
+- Pacific/* (39 zones)
+- UTC
+
+**Usage:**
+```typescript
+import { HolyTime } from 'holytime'
+
+HolyTime.TimeZones // Array of all timezone strings
+HolyTime.format(new Date(), 'YYYY-MM-DD HH:mm:ss', 'America/New_York')
+```
+
+## MONTH_NAMES
+
+```typescript
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+```
+
+Array of full month names in English.
+
+**Usage:**
+```typescript
+import { HolyTime } from 'holytime'
+
+HolyTime.Months // ['January', 'February', ...]
+HolyTime.Months[0] // 'January'
+HolyTime.Months[11] // 'December'
+```
+
+## DAY_NAMES
+
+```typescript
+const DAY_NAMES = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+]
+```
+
+Array of full day names in English, starting with Sunday (index 0).
+
+**Usage:**
+```typescript
+import { HolyTime } from 'holytime'
+
+HolyTime.Days // ['Sunday', 'Monday', ...]
+HolyTime.Days[0] // 'Sunday'
+HolyTime.Days[6] // 'Saturday'
+```
+
+## TIMEZONE_MAP
+
+```typescript
+const TIMEZONE_MAP = {
+  'UTC+0': 'UTC',
+} as const
+```
+
+Mapping of timezone aliases to IANA timezone identifiers. Currently contains a single mapping for UTC+0.
+
+**Usage:**
+This is used internally by Holy Time to resolve timezone aliases to standard IANA timezone names.

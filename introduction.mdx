@@ -1,0 +1,131 @@
+---
+title: Introduction
+description: A type-safe date and time manipulation library for TypeScript and JavaScript
+---
+
+# Introduction to Holy Time
+
+Holy Time is a type-safe date and time manipulation library that provides an intuitive, chainable API for working with dates, times, and durations in JavaScript and TypeScript.
+
+## Why Holy Time?
+
+Holy Time offers a modern approach to date manipulation with several key advantages:
+
+<CardGroup cols={2}>
+  <Card title="Type-Safe" icon="shield-check">
+    Built with TypeScript from the ground up, providing full type safety and excellent autocomplete support
+  </Card>
+  <Card title="Chainable API" icon="link">
+    Fluent interface allows you to chain operations for clean, readable code
+  </Card>
+  <Card title="Lightweight" icon="feather">
+    Zero dependencies and small bundle size
+  </Card>
+  <Card title="Intuitive" icon="sparkles">
+    Simple, consistent API that feels natural to use
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### Time Manipulation
+
+Holy Time provides both static and instance methods for adding, subtracting, and manipulating dates:
+
+```ts
+import HolyTime from 'holy-time'
+
+// Add and subtract time units
+HolyTime
+  .in(4, 'days')
+  .add(2, 'weeks')
+  .subtract(4, 'minutes')
+
+// Work with specific time boundaries
+const startOfDay = HolyTime.startOf('day')
+const endOfMonth = HolyTime.endOf('month')
+```
+
+### Comparisons & Queries
+
+Check relationships between dates and query properties:
+
+```ts
+// Check if a date is in the future, past, weekend
+const isFuture = HolyTime.isFuture(someDate)
+const isPast = new HolyTime('2022-10-20').isPast()
+const isWeekend = HolyTime.isWeekend(new Date())
+
+// Compare dates
+const isAfter = HolyTime.isAfter(dateA, dateB)
+const isBefore = new HolyTime(dateA).isBefore(dateB)
+```
+
+### Duration Calculations
+
+Calculate and format time differences:
+
+```ts
+// Calculate duration between two dates
+const duration = HolyTime.between(
+  HolyTime.startOf('day'),
+  HolyTime.now()
+).in('hours')
+
+// Create and manipulate durations
+HolyTime
+  .duration(2, 'hours')
+  .add(30, 'minutes')
+  .in('seconds') // 9000
+```
+
+### Formatting
+
+Format dates with custom patterns and timezone support:
+
+```ts
+// Format with patterns
+HolyTime.format(new Date(), 'YYYY-MM-DD HH:mm:ss')
+
+// Format with timezone
+const formatted = HolyTime.format(
+  new Date(),
+  'YYYY-MM-DD HH:mm:ss TZ',
+  'America/New_York'
+)
+
+// Relative time formatting
+const relative = HolyTime.relativeFromTo(
+  HolyTime.now(),
+  HolyTime.in(2, 'hours')
+) // "in 2 hours"
+```
+
+## Comparison to Alternatives
+
+<Note>
+Holy Time is designed as a modern alternative to libraries like Moment.js, Day.js, and date-fns, with a focus on type safety and chainable operations.
+</Note>
+
+| Feature | Holy Time | Moment.js | Day.js | date-fns |
+|---------|-----------|-----------|--------|----------|
+| Type-safe | Yes | No | Partial | Yes |
+| Chainable API | Yes | Yes | Yes | No |
+| Dependencies | 0 | Multiple | 0 | 0 |
+| Bundle Size | Small | Large | Small | Medium |
+| Mutable/Immutable | Mutable | Mutable | Immutable | Immutable |
+
+<Tip>
+If you're looking for a TypeScript-first library with a fluent API similar to Moment.js but without the weight, Holy Time is an excellent choice.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Get started by installing Holy Time in your project
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Learn the basics with a hands-on example
+  </Card>
+</CardGroup>

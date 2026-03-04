@@ -1,0 +1,452 @@
+---
+title: Examples
+description: Real-world examples and common patterns with Holy Time
+---
+
+# Examples
+
+Learn Holy Time through practical examples and common use cases.
+
+## Quick Start Examples
+
+These examples from the README demonstrate Holy Time's chainable API:
+
+### Basic Chaining
+
+```typescript
+import HolyTime from 'holy-time'
+
+HolyTime
+  .in(4, 'days')
+  .add(2, 'weeks')
+  .subtract(4, 'minutes')
+  .isWeekend()
+```
+
+This chain:
+1. Creates a date 4 days in the future
+2. Adds 2 weeks to it
+3. Subtracts 4 minutes
+4. Checks if the result falls on a weekend
+
+### Time Between Calculation
+
+```typescript
+HolyTime
+  .between(
+    HolyTime.add(HolyTime.startOf('day'), 2, 'hours'), 
+    HolyTime.now()
+  )
+  .in('hours')
+```
+
+This calculates:
+1. Gets start of today
+2. Adds 2 hours to it
+3. Calculates time between that and now
+4. Converts the duration to hours
+
+### Finding Maximum Date
+
+```typescript
+HolyTime.max(1666224000000, HolyTime.next('year'))
+```
+
+Finds the later date between:
+- A Unix timestamp (Oct 20, 2022)
+- The start of next year
+
+### Complex Comparison
+
+```typescript
+new HolyTime('2022-10-20')
+  .isAfter(
+    HolyTime.subtract(
+      HolyTime.in(4, 'days'), 
+      8, 'weeks'
+    )
+  )
+```
+
+Checks if October 20, 2022 is after:
+1. 4 days from now
+2. Minus 8 weeks
+
+### Duration Manipulation
+
+```typescript
+HolyTime
+  .duration(2, 'hours')
+  .add(30, 'minutes')
+  .in('seconds')
+```
+
+This:
+1. Creates a 2-hour duration
+2. Adds 30 minutes to it
+3. Converts to seconds (9000)
+
+## Real-World Use Cases
+
+### Blog Post Timestamps
+
+```typescript
+interface BlogPost {
+  title: string
+  publishedAt: Date
+}
+
+function formatPostDate(post: BlogPost): string {
+  const published = new HolyTime(post.publishedAt)
+  const now = HolyTime.now()
+  
+  // If published today, show relative time
+  if (published.isSame(now, 'day')) {
+    return published.getRelativeTo(now)
+  }
+  
+  // If published this year, show month and day
+  if (published.isSame(now, 'year')) {
+    return published.format('MMMM D')
+  }
+  
+  // Otherwise show full date
+  return published.format('MMMM D, YYYY')
+}
+
+const post = {
+  title: 'My Post',
+  publishedAt: new Date('2023-06-15T10:00:00.000Z')
+}
+
+formatPostDate(post)
+// Same day: "5 hours ago"
+// Same year: "June 15"
+// Different year: "June 15, 2023"
+```
+
+### Event Scheduling
+
+```typescript
+interface Event {
+  name: string
+  startTime: Date
+  endTime: Date
+}
+
+function getEventStatus(event: Event): string {
+  const start = new HolyTime(event.startTime)
+  const end = new HolyTime(event.endTime)
+  const now = HolyTime.now()
+  
+  if (now.isBefore(start)) {
+    return `Starts ${now.getRelativeTo(start)}`
+  } else if (now.isAfter(end)) {
+    return `Ended ${end.getRelativeTo(now)}`
+  } else {
+    const remaining = HolyTime.between(now, end)
+    return `In progress (${remaining.format('short')} remaining)`
+  }
+}
+
+const meeting = {
+  name: 'Team Sync',
+  startTime: HolyTime.in(1, 'hours').getDate(),
+  endTime: HolyTime.in(2, 'hours').getDate()
+}
+
+getEventStatus(meeting)
+// Before: "Starts in an hour"
+// During: "In progress (45m remaining)"
+// After: "Ended 2 hours ago"
+```
+
+### Business Hours Check
+
+```typescript
+interface BusinessHours {
+  timezone: string
+  openHour: number
+  closeHour: number
+  weekendsOpen: boolean
+}
+
+function isOpen(config: BusinessHours): boolean {
+  const now = HolyTime.now()
+  
+  // Check weekend
+  if (!config.weekendsOpen && now.isWeekend()) {
+    return false
+  }
+  
+  // Check hours in business timezone
+  const hour = now.get('hour', config.timezone)
+  return hour >= config.openHour && hour < config.closeHour
+}
+
+const businessConfig = {
+  timezone: 'America/New_York',
+  openHour: 9,
+  closeHour: 17,
+  weekendsOpen: false
+}
+
+isOpen(businessConfig)  // true or false
+```
+
+### Subscription Expiry
+
+```typescript
+interface Subscription {
+  userId: string
+  expiresAt: Date
+  plan: string
+}
+
+function getSubscriptionWarning(sub: Subscription): string | null {
+  const expiry = new HolyTime(sub.expiresAt)
+  const now = HolyTime.now()
+  
+  if (expiry.isPast()) {
+    return 'Your subscription has expired'
+  }
+  
+  const daysUntilExpiry = HolyTime.between(now, expiry).in('days')
+  
+  if (daysUntilExpiry <= 7) {
+    return `Subscription expires ${now.getRelativeTo(expiry)}`
+  }
+  
+  return null
+}
+
+const subscription = {
+  userId: 'user123',
+  expiresAt: HolyTime.in(5, 'days').getDate(),
+  plan: 'premium'
+}
+
+getSubscriptionWarning(subscription)
+// "Subscription expires in 5 days"
+```
+
+### Report Generation
+
+```typescript
+function generateMonthlyReport(year: number, month: number) {
+  const start = new HolyTime(new Date(year, month - 1, 1))
+    .startOf('month')
+  
+  const end = start.clone().endOf('month')
+  
+  return {
+    period: `${start.format('MMMM YYYY')}`,
+    startDate: start.format('YYYY-MM-DD'),
+    endDate: end.format('YYYY-MM-DD'),
+    totalDays: HolyTime.between(start, end).in('days'),
+    businessDays: countBusinessDays(start, end)
+  }
+}
+
+function countBusinessDays(start: HolyTime, end: HolyTime): number {
+  let count = 0
+  const current = start.clone()
+  
+  while (current.isBefore(end) || current.isSame(end, 'day')) {
+    if (!current.isWeekend()) {
+      count++
+    }
+    current.add(1, 'days')
+  }
+  
+  return count
+}
+
+generateMonthlyReport(2023, 6)
+// {
+//   period: "June 2023",
+//   startDate: "2023-06-01",
+//   endDate: "2023-06-30",
+//   totalDays: 30,
+//   businessDays: 22
+// }
+```
+
+### Age Calculator
+
+```typescript
+function calculateAge(birthDate: Date): {
+  years: number
+  exactDuration: string
+  nextBirthday: string
+} {
+  const birth = new HolyTime(birthDate)
+  const now = HolyTime.now()
+  
+  const duration = HolyTime.between(birth, now)
+  const years = Math.floor(duration.in('years'))
+  
+  // Find next birthday
+  const thisYearBirthday = new HolyTime(birthDate)
+    .set('year', now.get('year'))
+  
+  const nextBirthday = thisYearBirthday.isBefore(now)
+    ? thisYearBirthday.add(1, 'years')
+    : thisYearBirthday
+  
+  return {
+    years,
+    exactDuration: duration.format('long'),
+    nextBirthday: now.getRelativeTo(nextBirthday)
+  }
+}
+
+calculateAge(new Date('1990-06-15'))
+// {
+//   years: 33,
+//   exactDuration: "33 years, 2 months and 5 days",
+//   nextBirthday: "in 10 months"
+// }
+```
+
+## Common Patterns
+
+### Date Range Generator
+
+```typescript
+function generateDateRange(
+  start: Date,
+  end: Date,
+  interval: number = 1,
+  unit: 'days' | 'weeks' | 'months' = 'days'
+): HolyTime[] {
+  const dates: HolyTime[] = []
+  const current = new HolyTime(start)
+  const endDate = new HolyTime(end)
+  
+  while (current.isBefore(endDate) || current.isSame(endDate, 'day')) {
+    dates.push(current.clone())
+    current.add(interval, unit)
+  }
+  
+  return dates
+}
+
+const range = generateDateRange(
+  new Date('2023-06-01'),
+  new Date('2023-06-07'),
+  1,
+  'days'
+)
+// Returns array of 7 HolyTime instances
+```
+
+### Time Zone Converter
+
+```typescript
+function convertTimezone(
+  date: Date,
+  fromTz: string,
+  toTz: string
+): string {
+  const time = new HolyTime(date)
+  return time.format('YYYY-MM-DD HH:mm:ss', toTz)
+}
+
+convertTimezone(
+  new Date('2023-06-15T14:00:00Z'),
+  'UTC',
+  'America/New_York'
+)
+// "2023-06-15 10:00:00"
+```
+
+### Working Day Calculator
+
+```typescript
+function addWorkingDays(
+  startDate: Date,
+  daysToAdd: number
+): HolyTime {
+  const date = new HolyTime(startDate)
+  let daysAdded = 0
+  
+  while (daysAdded < daysToAdd) {
+    date.add(1, 'days')
+    if (!date.isWeekend()) {
+      daysAdded++
+    }
+  }
+  
+  return date
+}
+
+const deadline = addWorkingDays(new Date('2023-06-15'), 5)
+// Adds 5 working days (skips weekends)
+```
+
+### Recurring Event Generator
+
+```typescript
+function getNextOccurrences(
+  startDate: Date,
+  interval: number,
+  unit: 'days' | 'weeks' | 'months',
+  count: number
+): Date[] {
+  const occurrences: Date[] = []
+  const current = new HolyTime(startDate)
+  
+  for (let i = 0; i < count; i++) {
+    occurrences.push(current.clone().getDate())
+    current.add(interval, unit)
+  }
+  
+  return occurrences
+}
+
+getNextOccurrences(
+  new Date('2023-06-15'),
+  2,
+  'weeks',
+  5
+)
+// Returns next 5 dates, every 2 weeks
+```
+
+### Duration Formatter
+
+```typescript
+function formatDuration(
+  start: Date,
+  end: Date,
+  options: {
+    format?: 'short' | 'long'
+    allowedUnits?: string[]
+  } = {}
+): string {
+  const duration = HolyTime.between(start, end)
+  
+  const allowedSegments = options.allowedUnits
+    ? Object.fromEntries(
+        options.allowedUnits.map(unit => [unit, true])
+      )
+    : undefined
+  
+  return duration.format(
+    options.format || 'short',
+    allowedSegments
+  )
+}
+
+formatDuration(
+  new Date('2023-06-01'),
+  new Date('2023-06-15'),
+  { format: 'long', allowedUnits: ['days', 'hours'] }
+)
+// "14 days"
+```
+
+<Tip>
+All examples use type-safe methods and return predictable results. Clone dates when you need to preserve the original value.
+</Tip>

@@ -1,0 +1,127 @@
+---
+title: Types
+description: TypeScript type definitions for Holy Time
+---
+
+## TimeResolvable
+
+```typescript
+type TimeResolvable = HolyTime | Date | number | string
+```
+
+Union type representing any value that can be resolved to a time.
+
+**Accepted values:**
+- `HolyTime` - A HolyTime instance
+- `Date` - A JavaScript Date object
+- `number` - A timestamp in milliseconds
+- `string` - A date string parseable by the Date constructor
+
+**Example:**
+```typescript
+const time1 = new HolyTime('2024-01-01')
+const time2 = new HolyTime(new Date())
+const time3 = new HolyTime(1704067200000)
+const time4 = new HolyTime(existingHolyTimeInstance)
+```
+
+## DurationResolvable
+
+```typescript
+type DurationResolvable = HolyDuration | number
+```
+
+Union type representing any value that can be resolved to a duration.
+
+**Accepted values:**
+- `HolyDuration` - A HolyDuration instance
+- `number` - A duration in milliseconds
+
+**Example:**
+```typescript
+const duration1 = new HolyDuration(60000)
+const duration2 = new HolyDuration(existingDuration)
+```
+
+## HumanUnit
+
+```typescript
+type HumanUnit = `${Lowercase<keyof typeof TimeUnits>}s`
+```
+
+String literal type for plural time unit names.
+
+**Valid values:**
+- `'milliseconds'`
+- `'seconds'`
+- `'minutes'`
+- `'hours'`
+- `'days'`
+- `'weeks'`
+- `'months'`
+- `'years'`
+
+**Example:**
+```typescript
+HolyTime.add(new Date(), 5, 'minutes')
+HolyTime.add(new Date(), 2, 'hours')
+HolyTime.duration(30, 'seconds')
+```
+
+## IntervalUnit
+
+```typescript
+type IntervalUnit =
+  | 'millisecond'
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week'
+  | 'month'
+  | 'year'
+```
+
+String literal type for singular time interval unit names. Used for operations like `startOf()`, `endOf()`, and `isSame()`.
+
+**Valid values:**
+- `'millisecond'`
+- `'second'`
+- `'minute'`
+- `'hour'`
+- `'day'`
+- `'week'`
+- `'month'`
+- `'year'`
+
+**Example:**
+```typescript
+HolyTime.startOf('day')
+HolyTime.endOf('month')
+time.isSame(otherTime, 'hour')
+```
+
+## GetUnit
+
+```typescript
+type GetUnit = `${Lowercase<keyof typeof TimeUnits>}`
+```
+
+String literal type for singular time unit names. Used for getting and setting individual time components.
+
+**Valid values:**
+- `'millisecond'`
+- `'second'`
+- `'minute'`
+- `'hour'`
+- `'day'`
+- `'week'`
+- `'month'`
+- `'year'`
+
+**Example:**
+```typescript
+const hour = time.get('hour')
+time.set('minute', 30)
+const allComponents = time.get('object')
+```

@@ -1,0 +1,320 @@
+---
+title: Relative Time
+description: Display human-readable relative time strings with Holy Time
+---
+
+# Relative Time
+
+Holy Time provides powerful methods to display dates in human-readable relative format like "2 hours ago" or "in 3 days".
+
+## Basic Relative Time
+
+### relativeFromTo
+
+Get a relative time string between two dates:
+
+```typescript
+import HolyTime from 'holy-time'
+
+const past = new HolyTime('2023-01-01T00:00:00.000Z')
+const future = new HolyTime('2023-01-01T02:30:00.000Z')
+
+HolyTime.relativeFromTo(past, future)
+// Returns: "in 2 hours"
+
+HolyTime.relativeFromTo(future, past)
+// Returns: "2 hours ago"
+```
+
+### How It Works
+
+The method automatically determines:
+- The time difference between dates
+- Whether the time is in the past or future
+- The most appropriate time unit to display
+
+## Instance Methods
+
+### getRelativeTo
+
+Get relative time from the instance to another date:
+
+```typescript
+const date = new HolyTime('2023-01-01T00:00:00.000Z')
+const other = new HolyTime('2023-01-01T05:00:00.000Z')
+
+date.getRelativeTo(other)
+// Returns: "in 5 hours"
+```
+
+This is equivalent to:
+```typescript
+HolyTime.relativeFromTo(date, other)
+```
+
+### getRelativeFrom
+
+Get relative time from another date to the instance:
+
+```typescript
+const date = new HolyTime('2023-01-01T05:00:00.000Z')
+const other = new HolyTime('2023-01-01T00:00:00.000Z')
+
+date.getRelativeFrom(other)
+// Returns: "in 5 hours"
+```
+
+This is equivalent to:
+```typescript
+HolyTime.relativeFromTo(other, date)
+```
+
+## Time Since
+
+Get duration since a specific date:
+
+```typescript
+const date = new HolyTime('2023-01-01T01:02:03.000Z')
+
+const duration = HolyTime.since(date)
+duration.in('seconds')  // Time in seconds since the date
+duration.in('hours')    // Time in hours since the date
+duration.in('days')     // Time in days since the date
+```
+
+### Format the Duration
+
+```typescript
+const date = new HolyTime('2023-01-01')
+const duration = HolyTime.since(date)
+
+duration.format('short')  // e.g., "5d 3h 20m"
+duration.format('long')   // e.g., "5 days, 3 hours and 20 minutes"
+```
+
+## Relative Time Patterns
+
+Holy Time uses the `RELATIVE_MAP` to determine output strings. Here's how different time ranges are displayed:
+
+### Time Ranges
+
+<CodeGroup>
+```typescript Seconds
+// 0-4 seconds
+"a few seconds ago" / "in a few seconds"
+
+// 5-59 seconds
+"5 seconds ago" / "in 5 seconds"
+"30 seconds ago" / "in 30 seconds"
+```
+
+```typescript Minutes
+// 1 minute
+"a minute ago" / "in a minute"
+
+// 2-59 minutes
+"2 minutes ago" / "in 2 minutes"
+"45 minutes ago" / "in 45 minutes"
+```
+
+```typescript Hours
+// 1 hour
+"an hour ago" / "in an hour"
+
+// 2-23 hours
+"2 hours ago" / "in 2 hours"
+"12 hours ago" / "in 12 hours"
+```
+
+```typescript Days
+// 1 day
+"a day ago" / "in a day"
+
+// 2-6 days
+"2 days ago" / "in 2 days"
+"5 days ago" / "in 5 days"
+```
+
+```typescript Weeks
+// 1 week
+"a week ago" / "in a week"
+
+// 2-3 weeks
+"2 weeks ago" / "in 2 weeks"
+"3 weeks ago" / "in 3 weeks"
+```
+
+```typescript Months
+// 1 month
+"a month ago" / "in a month"
+
+// 2-11 months
+"2 months ago" / "in 2 months"
+"6 months ago" / "in 6 months"
+```
+
+```typescript Years
+// 1 year
+"a year ago" / "in a year"
+
+// 2+ years
+"2 years ago" / "in 2 years"
+"10 years ago" / "in 10 years"
+```
+</CodeGroup>
+
+## RELATIVE_MAP Structure
+
+The relative time patterns are defined in `src/constants.ts:38-63`:
+
+```typescript
+export const RELATIVE_MAP: Record<
+  number,
+  string | ((milliseconds: number) => string)
+> = {
+  [TimeUnits.SECOND * 0]: 'a few seconds',
+  [TimeUnits.SECOND * 5]: (ms) =>
+    `${Math.floor(ms / TimeUnits.SECOND)} seconds`,
+  [TimeUnits.MINUTE]: 'a minute',
+  [TimeUnits.MINUTE * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.MINUTE)} minutes`,
+  [TimeUnits.HOUR]: 'an hour',
+  [TimeUnits.HOUR * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.HOUR)} hours`,
+  [TimeUnits.DAY]: 'a day',
+  [TimeUnits.DAY * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.DAY)} days`,
+  [TimeUnits.WEEK]: 'a week',
+  [TimeUnits.WEEK * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.WEEK)} weeks`,
+  [TimeUnits.MONTH]: 'a month',
+  [TimeUnits.MONTH * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.MONTH)} months`,
+  [TimeUnits.YEAR]: 'a year',
+  [TimeUnits.YEAR * 2]: (ms) =>
+    `${Math.floor(ms / TimeUnits.YEAR)} years`,
+}
+```
+
+## Practical Examples
+
+### Social Media Timestamps
+
+```typescript
+function formatPostTime(postDate: Date): string {
+  const post = new HolyTime(postDate)
+  const now = HolyTime.now()
+  
+  return post.getRelativeTo(now)
+}
+
+formatPostTime(new Date('2023-06-15T10:00:00.000Z'))
+// Returns: "5 hours ago" (if current time is 3pm same day)
+```
+
+### Last Updated Display
+
+```typescript
+function getLastUpdated(updatedAt: Date): string {
+  return `Last updated ${new HolyTime(updatedAt).getRelativeTo(HolyTime.now())}`
+}
+
+getLastUpdated(new Date('2023-06-14'))
+// Returns: "Last updated a day ago"
+```
+
+### Event Countdown
+
+```typescript
+function eventCountdown(eventDate: Date): string {
+  const event = new HolyTime(eventDate)
+  const now = HolyTime.now()
+  
+  if (event.isFuture()) {
+    return `Event starts ${now.getRelativeTo(event)}`
+  } else {
+    return `Event started ${event.getRelativeTo(now)}`
+  }
+}
+
+eventCountdown(new Date('2024-12-25'))
+// Returns: "Event starts in 6 months"
+```
+
+### Duration Since Last Action
+
+```typescript
+function timeSinceLastLogin(lastLogin: Date): {
+  text: string
+  duration: HolyDuration
+} {
+  const duration = HolyTime.since(lastLogin)
+  const text = new HolyTime(lastLogin).getRelativeTo(HolyTime.now())
+  
+  return { text, duration }
+}
+
+const result = timeSinceLastLogin(new Date('2023-06-10'))
+// result.text: "5 days ago"
+// result.duration.in('hours'): 120
+```
+
+### Combining with Comparisons
+
+```typescript
+function getTimeStatus(date: Date): string {
+  const time = new HolyTime(date)
+  
+  if (time.isFuture()) {
+    return `Coming ${HolyTime.now().getRelativeTo(time)}`
+  } else if (time.isPast()) {
+    return `Happened ${time.getRelativeTo(HolyTime.now())}`
+  } else {
+    return "Happening now"
+  }
+}
+```
+
+## Advanced Usage
+
+### Custom Threshold Logic
+
+```typescript
+function smartRelativeTime(date: Date): string {
+  const time = new HolyTime(date)
+  const duration = HolyTime.since(date)
+  
+  // For very recent times, show exact time
+  if (duration.in('minutes') < 5) {
+    return time.format('HH:mm')
+  }
+  
+  // For same day, show relative
+  if (time.isSame(HolyTime.now(), 'day')) {
+    return time.getRelativeTo(HolyTime.now())
+  }
+  
+  // For older dates, show full date
+  return time.format('YYYY-MM-DD')
+}
+```
+
+### Pluralization Handling
+
+The `RELATIVE_MAP` automatically handles pluralization:
+
+```typescript
+// Singular forms (1 unit)
+"a minute ago"    // Not "1 minute ago"
+"an hour ago"     // Not "1 hour ago"
+"a day ago"       // Not "1 day ago"
+
+// Plural forms (2+ units)
+"2 minutes ago"
+"5 hours ago"
+"3 days ago"
+```
+
+<Tip>
+The relative time calculation always uses the absolute difference between dates, ensuring consistent output regardless of date order.
+</Tip>

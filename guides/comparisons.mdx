@@ -1,0 +1,318 @@
+---
+title: Date Comparisons
+description: Compare dates and check temporal relationships with Holy Time
+---
+
+# Date Comparisons
+
+Holy Time provides comprehensive methods for comparing dates and checking temporal conditions.
+
+## Basic Comparisons
+
+### isAfter
+
+Check if one date is after another:
+
+```typescript
+import HolyTime from 'holy-time'
+
+const earlier = new HolyTime('2023-01-01T00:00:00.000Z')
+const later = new HolyTime('2023-01-02T00:00:00.000Z')
+
+earlier.isAfter(later)  // false
+later.isAfter(earlier)  // true
+```
+
+### Static Method
+
+```typescript
+HolyTime.isAfter('2023-01-02', '2023-01-01')  // true
+```
+
+### isBefore
+
+Check if one date is before another:
+
+```typescript
+const earlier = new HolyTime('2023-01-01T00:00:00.000Z')
+const later = new HolyTime('2023-01-02T00:00:00.000Z')
+
+earlier.isBefore(later)  // true
+later.isBefore(earlier)  // false
+```
+
+### Static Method
+
+```typescript
+HolyTime.isBefore('2023-01-01', '2023-01-02')  // true
+```
+
+## Same Time Comparison
+
+Check if two dates represent the same moment or fall within the same time period:
+
+```typescript
+const date1 = new HolyTime('2023-01-01T12:30:00.000Z')
+const date2 = new HolyTime('2023-01-01T14:45:00.000Z')
+
+// Exact match
+date1.isSame(date2, 'millisecond')  // false
+
+// Same day
+date1.isSame(date2, 'day')  // true
+
+// Same month
+date1.isSame(date2, 'month')  // true
+
+// Same year
+date1.isSame(date2, 'year')  // true
+```
+
+### Supported Units
+
+<CodeGroup>
+```typescript Millisecond
+date1.isSame(date2, 'millisecond')  // Exact timestamp match
+```
+
+```typescript Second
+date1.isSame(date2, 'second')  // Same second
+```
+
+```typescript Minute
+date1.isSame(date2, 'minute')  // Same minute
+```
+
+```typescript Hour
+date1.isSame(date2, 'hour')  // Same hour
+```
+
+```typescript Day
+date1.isSame(date2, 'day')  // Same day
+```
+
+```typescript Week
+date1.isSame(date2, 'week')  // Same week
+```
+
+```typescript Month
+date1.isSame(date2, 'month')  // Same month
+```
+
+```typescript Year
+date1.isSame(date2, 'year')  // Same year
+```
+</CodeGroup>
+
+### Static Method
+
+```typescript
+HolyTime.isSame('2023-01-01', '2023-01-15', 'month')  // true
+```
+
+## Relative to Current Time
+
+### isFuture
+
+Check if a date is in the future:
+
+```typescript
+const tomorrow = HolyTime.in(1, 'days')
+const yesterday = HolyTime.in(-1, 'days')
+
+tomorrow.isFuture()   // true
+yesterday.isFuture()  // false
+```
+
+### Static Method
+
+```typescript
+HolyTime.isFuture('2030-01-01')  // true
+```
+
+### isPast
+
+Check if a date is in the past:
+
+```typescript
+const yesterday = HolyTime.in(-1, 'days')
+const tomorrow = HolyTime.in(1, 'days')
+
+yesterday.isPast()  // true
+tomorrow.isPast()   // false
+```
+
+### Static Method
+
+```typescript
+HolyTime.isPast('2020-01-01')  // true
+```
+
+## Special Checks
+
+### isWeekend
+
+Check if a date falls on a weekend (Saturday or Sunday):
+
+```typescript
+const weekday = new HolyTime('2023-01-04T01:00:00.000Z')  // Wednesday
+const weekend = new HolyTime('2023-01-07T00:00:00.000Z')  // Saturday
+
+weekday.isWeekend()  // false
+weekend.isWeekend()  // true
+```
+
+### Static Method
+
+```typescript
+HolyTime.isWeekend('2023-01-07')  // true (Saturday)
+HolyTime.isWeekend('2023-01-08')  // true (Sunday)
+HolyTime.isWeekend('2023-01-09')  // false (Monday)
+```
+
+### isLeapYear
+
+Check if a year is a leap year:
+
+```typescript
+HolyTime.isLeapYear(2024)  // true
+HolyTime.isLeapYear(2023)  // false
+HolyTime.isLeapYear(2000)  // true
+HolyTime.isLeapYear(1900)  // false
+```
+
+### Instance Method
+
+```typescript
+const date = new HolyTime('2024-06-15')
+date.isLeapYear()  // true
+```
+
+<Tip>
+Leap year rules: divisible by 4, except century years must be divisible by 400.
+</Tip>
+
+## Min and Max
+
+### Finding Maximum Date
+
+Get the latest date from multiple dates:
+
+```typescript
+const date1 = new HolyTime('2023-01-01T01:02:03.000Z')
+const date2 = new HolyTime('2023-01-01T01:02:04.000Z')
+const date3 = '2023-01-01T01:02:02.000Z'
+
+const latest = HolyTime.max(date1, date2, date3)
+// Returns: date2 (2023-01-01T01:02:04.000Z)
+```
+
+### Finding Minimum Date
+
+Get the earliest date from multiple dates:
+
+```typescript
+const date1 = new HolyTime('2023-01-01T01:02:03.000Z')
+const date2 = new HolyTime('2023-01-01T01:02:04.000Z')
+const date3 = '2023-01-01T01:02:02.000Z'
+
+const earliest = HolyTime.min(date1, date2, date3)
+// Returns: date3 as HolyTime (2023-01-01T01:02:02.000Z)
+```
+
+### Real-World Example
+
+```typescript
+// Find the most recent update
+const updates = [
+  '2023-06-01',
+  '2023-06-15',
+  '2023-06-10'
+]
+
+const mostRecent = HolyTime.max(...updates)
+```
+
+## Time Between Dates
+
+Calculate duration between two dates:
+
+```typescript
+const start = new HolyTime('2023-01-01T00:00:00.000Z')
+const end = new HolyTime('2023-01-01T01:00:00.000Z')
+
+const duration = HolyTime.between(start, end)
+duration.in('hours')        // 1
+duration.in('minutes')      // 60
+duration.in('milliseconds') // 3600000
+```
+
+### Format Duration
+
+```typescript
+const start = new HolyTime('2023-01-01')
+const end = new HolyTime('2023-01-03')
+
+const duration = HolyTime.between(start, end)
+duration.format('short')  // "2d"
+duration.format('long')   // "2 days"
+```
+
+## Practical Examples
+
+<Accordion title="Check if date is in business hours">
+```typescript
+function isBusinessHours(date: HolyTime): boolean {
+  if (date.isWeekend()) return false
+  
+  const hour = date.get('hour')
+  return hour >= 9 && hour < 17
+}
+
+const now = HolyTime.now()
+isBusinessHours(now)  // true or false
+```
+</Accordion>
+
+<Accordion title="Find nearest date">
+```typescript
+function findNearest(target: HolyTime, dates: HolyTime[]): HolyTime {
+  return dates.reduce((nearest, current) => {
+    const nearestDiff = HolyTime.between(target, nearest).in('milliseconds')
+    const currentDiff = HolyTime.between(target, current).in('milliseconds')
+    return currentDiff < nearestDiff ? current : nearest
+  })
+}
+```
+</Accordion>
+
+<Accordion title="Check if date is in range">
+```typescript
+function isInRange(
+  date: HolyTime,
+  start: HolyTime,
+  end: HolyTime
+): boolean {
+  return date.isAfter(start) && date.isBefore(end)
+}
+
+const now = HolyTime.now()
+const rangeStart = HolyTime.in(-7, 'days')
+const rangeEnd = HolyTime.in(7, 'days')
+
+isInRange(now, rangeStart, rangeEnd)  // true
+```
+</Accordion>
+
+<Accordion title="Complex chained comparison">
+```typescript
+const isValid = new HolyTime('2022-10-20')
+  .isAfter(
+    HolyTime.subtract(
+      HolyTime.in(4, 'days'), 
+      8, 'weeks'
+    )
+  )
+// Checks if Oct 20, 2022 is after (4 days from now - 8 weeks)
+```
+</Accordion>

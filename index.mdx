@@ -1,97 +1,201 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: Holy Time Documentation
+mode: custom
 ---
 
-## Setting up
+<div className="relative overflow-hidden dark:bg-[#0f1117] bg-white">
+  {/* Hero Section */}
+  <div className="relative py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, #94cb04 0%, #7aa503 100%)' }}>
+    <div className="max-w-7xl mx-auto">
+      <div className="text-center">
+        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6">
+          Holy Time
+        </h1>
+        <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+          Type-safe date and time manipulation library for JavaScript and TypeScript
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <a
+            href="/quickstart"
+            className="inline-flex items-center px-8 py-3 rounded-lg text-base font-semibold transition-colors bg-white text-gray-900 hover:bg-gray-100"
+          >
+            Get Started
+          </a>
+          <a
+            href="/api/holytime"
+            className="inline-flex items-center px-8 py-3 rounded-lg text-base font-semibold transition-colors border border-white/30 bg-white/10 text-white hover:bg-white/20"
+          >
+            API Reference
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-Get your documentation site up and running in minutes.
+  {/* Quick Start Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Quick start
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Get up and running with Holy Time in seconds
+    </p>
+    
+    <Steps>
+      <Step title="Install the package">
+        Install Holy Time using your favorite package manager:
+        
+        <CodeGroup>
+        ```bash npm
+        npm install holy-time
+        ```
+        ```bash yarn
+        yarn add holy-time
+        ```
+        ```bash pnpm
+        pnpm add holy-time
+        ```
+        </CodeGroup>
+      </Step>
+      
+      <Step title="Import and use">
+        Start manipulating dates with a fluent, type-safe API:
+        
+        ```typescript
+        import HolyTime from 'holy-time'
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+        // Get the current time
+        const now = HolyTime.now()
 
-## Make it yours
+        // Chain operations fluently
+        const future = HolyTime
+          .in(4, 'days')
+          .add(2, 'weeks')
+          .subtract(4, 'minutes')
 
-Design a docs site that looks great and empowers your users.
+        // Check if it's the weekend
+        console.log(future.isWeekend())
+        ```
+      </Step>
+      
+      <Step title="Explore the API">
+        Holy Time provides a comprehensive API for date manipulation, formatting, comparisons, and more. Check out the [API Reference](/api/holytime) for full details.
+      </Step>
+    </Steps>
+  </div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+  {/* Features Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Explore by topic
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Learn how to work with dates and times in JavaScript
+    </p>
+    
+    <CardGroup cols={2}>
+      <Card
+        title="Time objects"
+        icon="clock"
+        href="/concepts/time-objects"
+      >
+        Create and manipulate time instances with the HolyTime class
+      </Card>
+      <Card
+        title="Durations"
+        icon="hourglass"
+        href="/concepts/durations"
+      >
+        Calculate and format time durations between dates
+      </Card>
+      <Card
+        title="Formatting"
+        icon="paintbrush"
+        href="/concepts/formatting"
+      >
+        Display dates in any format with powerful formatting patterns
+      </Card>
+      <Card
+        title="Timezones"
+        icon="globe"
+        href="/concepts/timezones"
+      >
+        Handle timezone conversions and UTC operations
+      </Card>
+      <Card
+        title="Date manipulation"
+        icon="wand-magic-sparkles"
+        href="/guides/date-manipulation"
+      >
+        Add, subtract, and calculate differences between dates
+      </Card>
+      <Card
+        title="Comparisons"
+        icon="code-compare"
+        href="/guides/comparisons"
+      >
+        Compare dates and check relationships
+      </Card>
+    </CardGroup>
+  </div>
 
-## Create beautiful pages
+  {/* API Reference Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      API reference
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Complete API documentation for all classes and methods
+    </p>
+    
+    <CardGroup cols={2}>
+      <Card
+        title="HolyTime"
+        icon="clock-rotate-left"
+        href="/api/holytime"
+      >
+        Main class for date and time manipulation
+      </Card>
+      <Card
+        title="HolyDuration"
+        icon="stopwatch"
+        href="/api/holyduration"
+      >
+        Class for working with time durations
+      </Card>
+      <Card
+        title="Types"
+        icon="brackets-curly"
+        href="/api/types"
+      >
+        TypeScript type definitions and interfaces
+      </Card>
+      <Card
+        title="Constants"
+        icon="hashtag"
+        href="/api/constants"
+      >
+        Time units, timezone values, and other constants
+      </Card>
+    </CardGroup>
+  </div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+  {/* CTA Banner */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <div className="dark:bg-[#1a1d27] bg-gray-50 dark:border-[#27272a] border-gray-200 border rounded-2xl p-8 sm:p-12 text-center">
+      <h2 className="text-2xl sm:text-3xl font-bold dark:text-white text-gray-900 mb-4">
+        Ready to get started?
+      </h2>
+      <p className="text-base dark:text-gray-400 text-gray-600 mb-6 max-w-2xl mx-auto">
+        Follow our quickstart guide to start building with Holy Time in minutes
+      </p>
+      <a
+        href="/quickstart"
+        className="inline-flex items-center px-8 py-3 rounded-lg text-base font-semibold transition-colors text-white hover:opacity-90"
+        style={{ backgroundColor: '#94cb04' }}
+      >
+        Get Started
+      </a>
+    </div>
+  </div>
+</div>

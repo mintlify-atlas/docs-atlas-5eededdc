@@ -1,0 +1,163 @@
+---
+title: HolyDuration
+description: Class for representing and manipulating time durations
+---
+
+## Constructor
+
+```typescript
+constructor(duration: DurationResolvable)
+```
+
+Creates a new HolyDuration instance.
+
+<ParamField path="duration" type="DurationResolvable" required>
+  The duration value in milliseconds. Can be a number or another HolyDuration instance.
+</ParamField>
+
+## Instance Methods
+
+### add()
+
+```typescript
+add(duration: HolyDuration): this
+add(amount: number, unit?: HumanUnit): this
+```
+
+Adds to this duration (mutates).
+
+<ParamField path="duration" type="HolyDuration">
+  A HolyDuration instance to add
+</ParamField>
+
+<ParamField path="amount" type="number">
+  The amount to add (when using number overload)
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time (when using number overload)
+</ParamField>
+
+<ResponseField name="return" type="this">
+  This instance for chaining
+</ResponseField>
+
+**Examples:**
+```typescript
+duration.add(5, 'minutes')
+duration.add(otherDuration)
+```
+
+### subtract()
+
+```typescript
+subtract(duration: HolyDuration): this
+subtract(amount: number, unit?: HumanUnit): this
+```
+
+Subtracts from this duration (mutates).
+
+<ParamField path="duration" type="HolyDuration">
+  A HolyDuration instance to subtract
+</ParamField>
+
+<ParamField path="amount" type="number">
+  The amount to subtract (when using number overload)
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time (when using number overload)
+</ParamField>
+
+<ResponseField name="return" type="this">
+  This instance for chaining
+</ResponseField>
+
+**Examples:**
+```typescript
+duration.subtract(30, 'seconds')
+duration.subtract(otherDuration)
+```
+
+### in()
+
+```typescript
+in(unit: HumanUnit): number
+```
+
+Converts the duration to the specified unit.
+
+<ParamField path="unit" type="HumanUnit" required>
+  The unit to convert to ('milliseconds', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years')
+</ParamField>
+
+<ResponseField name="return" type="number">
+  The duration value in the specified unit
+</ResponseField>
+
+**Example:**
+```typescript
+const duration = new HolyDuration(60000)
+duration.in('seconds') // 60
+duration.in('minutes') // 1
+```
+
+### format()
+
+```typescript
+format(
+  type: 'short' | 'long' = 'short',
+  allowedSegments: Partial<Record<HumanUnit, boolean>> = { /* all units enabled */ }
+): string
+```
+
+Formats the duration as a human-readable string.
+
+<ParamField path="type" type="'short' | 'long'" default="'short'">
+  Format type:
+  - `'short'`: Compact format (e.g., "1h 30m 45s")
+  - `'long'`: Verbose format (e.g., "1 hour, 30 minutes and 45 seconds")
+</ParamField>
+
+<ParamField path="allowedSegments" type="Partial<Record<HumanUnit, boolean>>">
+  Object specifying which time units to include in the output. By default, all units are enabled.
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Formatted duration string
+</ResponseField>
+
+**Examples:**
+```typescript
+const duration = new HolyDuration(5430000) // 1h 30m 30s
+
+// Short format (default)
+duration.format('short') // "1h 30m 30s"
+
+// Long format
+duration.format('long') // "1 hour, 30 minutes and 30 seconds"
+
+// Only show hours and minutes
+duration.format('short', { hours: true, minutes: true, seconds: false })
+// "1h 30m"
+```
+
+### clone()
+
+```typescript
+clone(): HolyDuration
+```
+
+Creates a copy of this HolyDuration instance.
+
+<ResponseField name="return" type="HolyDuration">
+  New HolyDuration instance with the same duration value
+</ResponseField>
+
+**Example:**
+```typescript
+const original = new HolyDuration(1000)
+const copy = original.clone()
+copy.add(500)
+// original remains 1000ms
+```

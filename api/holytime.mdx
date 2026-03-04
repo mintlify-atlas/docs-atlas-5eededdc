@@ -1,0 +1,874 @@
+---
+title: HolyTime
+description: Main class for date and time manipulation with type-safe operations
+---
+
+## Constructor
+
+```typescript
+constructor(initialDate: TimeResolvable = new Date())
+```
+
+Creates a new HolyTime instance.
+
+<ParamField path="initialDate" type="TimeResolvable" default="new Date()">
+  The initial date/time value. Can be a HolyTime instance, Date object, number (timestamp), or string.
+</ParamField>
+
+## Static Properties
+
+### Units
+
+```typescript
+static Units = TimeUnits
+```
+
+Object containing time unit constants in milliseconds.
+
+### TimeZones
+
+```typescript
+static TimeZones = TIMEZONES
+```
+
+Array of all supported timezone strings.
+
+### Days
+
+```typescript
+static Days = DAY_NAMES
+```
+
+Array of day names: `['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']`
+
+### Months
+
+```typescript
+static Months = MONTH_NAMES
+```
+
+Array of month names: `['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']`
+
+## Static Methods
+
+### now()
+
+```typescript
+static now(): HolyTime
+```
+
+Creates a HolyTime instance representing the current moment.
+
+<ResponseField name="return" type="HolyTime">
+  New HolyTime instance with current date/time
+</ResponseField>
+
+### isValid()
+
+```typescript
+static isValid(time: TimeResolvable): boolean
+```
+
+Checks if a time value is valid.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time value to validate
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the time is valid, false otherwise
+</ResponseField>
+
+### add()
+
+```typescript
+static add(time: TimeResolvable, amount: number, unit: HumanUnit = 'milliseconds'): HolyTime
+```
+
+Adds time to a given date and returns a new HolyTime instance.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The base time
+</ParamField>
+
+<ParamField path="amount" type="number" required>
+  The amount to add
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time (e.g., 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years')
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  New HolyTime instance with the added time
+</ResponseField>
+
+### subtract()
+
+```typescript
+static subtract(time: TimeResolvable, amount: number, unit: HumanUnit = 'milliseconds'): HolyTime
+```
+
+Subtracts time from a given date and returns a new HolyTime instance.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The base time
+</ParamField>
+
+<ParamField path="amount" type="number" required>
+  The amount to subtract
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  New HolyTime instance with the subtracted time
+</ResponseField>
+
+### in()
+
+```typescript
+static in(amount: number, unit: HumanUnit = 'milliseconds'): HolyTime
+```
+
+Creates a HolyTime instance representing a time in the future from now.
+
+<ParamField path="amount" type="number" required>
+  The amount of time in the future
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  New HolyTime instance representing the future time
+</ResponseField>
+
+### between()
+
+```typescript
+static between(timeA: TimeResolvable, timeB: TimeResolvable): HolyDuration
+```
+
+Calculates the absolute duration between two times.
+
+<ParamField path="timeA" type="TimeResolvable" required>
+  First time
+</ParamField>
+
+<ParamField path="timeB" type="TimeResolvable" required>
+  Second time
+</ParamField>
+
+<ResponseField name="return" type="HolyDuration">
+  Duration between the two times
+</ResponseField>
+
+### isSame()
+
+```typescript
+static isSame(timeA: TimeResolvable, timeB: TimeResolvable, unit: IntervalUnit = 'millisecond'): boolean
+```
+
+Checks if two times are the same at the specified unit precision.
+
+<ParamField path="timeA" type="TimeResolvable" required>
+  First time
+</ParamField>
+
+<ParamField path="timeB" type="TimeResolvable" required>
+  Second time
+</ParamField>
+
+<ParamField path="unit" type="IntervalUnit" default="'millisecond'">
+  Unit of precision ('millisecond', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year')
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if times are the same at the specified precision
+</ResponseField>
+
+### isWeekend()
+
+```typescript
+static isWeekend(time: TimeResolvable): boolean
+```
+
+Checks if a given time falls on a weekend (Saturday or Sunday).
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to check
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the time is on a weekend
+</ResponseField>
+
+### isLeapYear()
+
+```typescript
+static isLeapYear(year: number): boolean
+```
+
+Checks if a given year is a leap year.
+
+<ParamField path="year" type="number" required>
+  The year to check (must be a positive integer)
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the year is a leap year
+</ResponseField>
+
+### isAfter()
+
+```typescript
+static isAfter(timeA: TimeResolvable, timeB: TimeResolvable): boolean
+```
+
+Checks if timeA is after timeB.
+
+<ParamField path="timeA" type="TimeResolvable" required>
+  First time
+</ParamField>
+
+<ParamField path="timeB" type="TimeResolvable" required>
+  Second time
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if timeA is after timeB
+</ResponseField>
+
+### isBefore()
+
+```typescript
+static isBefore(timeA: TimeResolvable, timeB: TimeResolvable): boolean
+```
+
+Checks if timeA is before timeB.
+
+<ParamField path="timeA" type="TimeResolvable" required>
+  First time
+</ParamField>
+
+<ParamField path="timeB" type="TimeResolvable" required>
+  Second time
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if timeA is before timeB
+</ResponseField>
+
+### isFuture()
+
+```typescript
+static isFuture(time: TimeResolvable): boolean
+```
+
+Checks if a time is in the future.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to check
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the time is in the future
+</ResponseField>
+
+### isPast()
+
+```typescript
+static isPast(time: TimeResolvable): boolean
+```
+
+Checks if a time is in the past.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to check
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the time is in the past
+</ResponseField>
+
+### since()
+
+```typescript
+static since(time: TimeResolvable): HolyDuration
+```
+
+Calculates the duration since a given time until now.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The starting time
+</ParamField>
+
+<ResponseField name="return" type="HolyDuration">
+  Duration from the given time to now
+</ResponseField>
+
+### max()
+
+```typescript
+static max(...times: TimeResolvable[]): HolyTime
+```
+
+Returns the latest time from the provided times.
+
+<ParamField path="times" type="TimeResolvable[]" required>
+  Variable number of times to compare
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  The latest time
+</ResponseField>
+
+### min()
+
+```typescript
+static min(...times: TimeResolvable[]): HolyTime
+```
+
+Returns the earliest time from the provided times.
+
+<ParamField path="times" type="TimeResolvable[]" required>
+  Variable number of times to compare
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  The earliest time
+</ResponseField>
+
+### startOf()
+
+```typescript
+static startOf(unit: IntervalUnit, time: TimeResolvable = new Date(), timeZone?: TimeZone): HolyTime
+```
+
+Returns the start of the specified time unit.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit ('millisecond', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year')
+</ParamField>
+
+<ParamField path="time" type="TimeResolvable" default="new Date()">
+  The reference time
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the start of the unit
+</ResponseField>
+
+### endOf()
+
+```typescript
+static endOf(unit: IntervalUnit, time: TimeResolvable = new Date(), timeZone?: TimeZone): HolyTime
+```
+
+Returns the end of the specified time unit.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit
+</ParamField>
+
+<ParamField path="time" type="TimeResolvable" default="new Date()">
+  The reference time
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the end of the unit
+</ResponseField>
+
+### format()
+
+```typescript
+static format(time: TimeResolvable, format: string | ((time: HolyTime) => string), timeZone?: TimeZone): string
+```
+
+Formats a time according to the specified format string or function.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to format
+</ParamField>
+
+<ParamField path="format" type="string | ((time: HolyTime) => string)" required>
+  Format string (e.g., 'YYYY-MM-DD HH:mm:ss') or custom formatter function
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Formatted time string
+</ResponseField>
+
+**Format Tokens:**
+- `YYYY` - 4-digit year
+- `YY` - 2-digit year
+- `MMMM` - Full month name
+- `MMM` - Short month name
+- `MM` - 2-digit month
+- `M` - Month number
+- `DD` - 2-digit day
+- `D` - Day number
+- `DDDD` - Full day name
+- `HH` - 2-digit hour (24h)
+- `H` - Hour (24h)
+- `hh` - 2-digit hour (12h)
+- `h` - Hour (12h)
+- `mm` - 2-digit minutes
+- `m` - Minutes
+- `ss` - 2-digit seconds
+- `s` - Seconds
+- `A` - AM/PM (uppercase)
+- `a` - am/pm (lowercase)
+- `O` - GMT offset (short)
+- `OO` - GMT offset (long)
+- `TZ` - Timezone name
+
+### relativeFromTo()
+
+```typescript
+static relativeFromTo(timeA: TimeResolvable, timeB: TimeResolvable): string
+```
+
+Returns a human-readable relative time string between two times.
+
+<ParamField path="timeA" type="TimeResolvable" required>
+  First time
+</ParamField>
+
+<ParamField path="timeB" type="TimeResolvable" required>
+  Second time
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Relative time string (e.g., '5 minutes ago', 'in 2 hours')
+</ResponseField>
+
+### next()
+
+```typescript
+static next(unit: IntervalUnit, time: TimeResolvable = new Date(), timeZone?: TimeZone): HolyTime
+```
+
+Returns the start of the next time unit.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit
+</ParamField>
+
+<ParamField path="time" type="TimeResolvable" default="new Date()">
+  The reference time
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the start of the next unit
+</ResponseField>
+
+### duration()
+
+```typescript
+static duration(amount: number, unit: HumanUnit = 'milliseconds'): HolyDuration
+```
+
+Creates a HolyDuration instance.
+
+<ParamField path="amount" type="number" required>
+  The duration amount
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time
+</ParamField>
+
+<ResponseField name="return" type="HolyDuration">
+  New HolyDuration instance
+</ResponseField>
+
+### getTimeZone()
+
+```typescript
+static getTimeZone(): TimeZone
+```
+
+Returns the system's current timezone.
+
+<ResponseField name="return" type="TimeZone">
+  Current timezone string
+</ResponseField>
+
+## Instance Methods
+
+### add()
+
+```typescript
+add(amount: number, unit: HumanUnit = 'milliseconds'): this
+```
+
+Adds time to this instance (mutates).
+
+<ParamField path="amount" type="number" required>
+  The amount to add
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time
+</ParamField>
+
+<ResponseField name="return" type="this">
+  This instance for chaining
+</ResponseField>
+
+### subtract()
+
+```typescript
+subtract(amount: number, unit: HumanUnit = 'milliseconds'): this
+```
+
+Subtracts time from this instance (mutates).
+
+<ParamField path="amount" type="number" required>
+  The amount to subtract
+</ParamField>
+
+<ParamField path="unit" type="HumanUnit" default="'milliseconds'">
+  The unit of time
+</ParamField>
+
+<ResponseField name="return" type="this">
+  This instance for chaining
+</ResponseField>
+
+### isSame()
+
+```typescript
+isSame(time: TimeResolvable, unit: IntervalUnit = 'millisecond'): boolean
+```
+
+Checks if this time is the same as another time at the specified precision.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to compare
+</ParamField>
+
+<ParamField path="unit" type="IntervalUnit" default="'millisecond'">
+  Unit of precision
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if times are the same
+</ResponseField>
+
+### isWeekend()
+
+```typescript
+isWeekend(): boolean
+```
+
+Checks if this time falls on a weekend.
+
+<ResponseField name="return" type="boolean">
+  True if this time is on a weekend
+</ResponseField>
+
+### isLeapYear()
+
+```typescript
+isLeapYear(time: TimeResolvable): boolean
+```
+
+Checks if this time's year is a leap year.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to check
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the year is a leap year
+</ResponseField>
+
+### isAfter()
+
+```typescript
+isAfter(time: TimeResolvable): boolean
+```
+
+Checks if this time is after another time.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to compare
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if this time is after the given time
+</ResponseField>
+
+### isBefore()
+
+```typescript
+isBefore(time: TimeResolvable): boolean
+```
+
+Checks if this time is before another time.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The time to compare
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if this time is before the given time
+</ResponseField>
+
+### isFuture()
+
+```typescript
+isFuture(): boolean
+```
+
+Checks if this time is in the future.
+
+<ResponseField name="return" type="boolean">
+  True if this time is in the future
+</ResponseField>
+
+### isPast()
+
+```typescript
+isPast(): boolean
+```
+
+Checks if this time is in the past.
+
+<ResponseField name="return" type="boolean">
+  True if this time is in the past
+</ResponseField>
+
+### startOf()
+
+```typescript
+startOf(unit: IntervalUnit, timeZone?: TimeZone): HolyTime
+```
+
+Returns the start of the specified time unit for this instance.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the start of the unit
+</ResponseField>
+
+### endOf()
+
+```typescript
+endOf(unit: IntervalUnit, timeZone?: TimeZone): HolyTime
+```
+
+Returns the end of the specified time unit for this instance.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the end of the unit
+</ResponseField>
+
+### format()
+
+```typescript
+format(format: string, timeZone?: TimeZone): string
+```
+
+Formats this time according to the specified format string.
+
+<ParamField path="format" type="string" required>
+  Format string
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Formatted time string
+</ResponseField>
+
+### next()
+
+```typescript
+next(unit: IntervalUnit, timeZone?: TimeZone): HolyTime
+```
+
+Returns the start of the next time unit for this instance.
+
+<ParamField path="unit" type="IntervalUnit" required>
+  The unit
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="HolyTime">
+  Time representing the start of the next unit
+</ResponseField>
+
+### get()
+
+```typescript
+get<T extends 'object' | GetUnit>(unit: T, timeZone?: TimeZone): T extends 'object' ? Record<GetUnit, number> : number
+```
+
+Gets a specific time component or all components as an object.
+
+<ParamField path="unit" type="'object' | GetUnit" required>
+  The unit to get ('millisecond', 'second', 'minute', 'hour', 'day', 'week', 'month', 'year', or 'object' for all)
+</ParamField>
+
+<ParamField path="timeZone" type="TimeZone">
+  Optional timezone
+</ParamField>
+
+<ResponseField name="return" type="number | Record<GetUnit, number>">
+  The component value or object with all components
+</ResponseField>
+
+### set()
+
+```typescript
+set(unit: GetUnit, value: number): this
+```
+
+Sets a specific time component (mutates).
+
+<ParamField path="unit" type="GetUnit" required>
+  The unit to set
+</ParamField>
+
+<ParamField path="value" type="number" required>
+  The value to set
+</ParamField>
+
+<ResponseField name="return" type="this">
+  This instance for chaining
+</ResponseField>
+
+### getDate()
+
+```typescript
+getDate(): Date
+```
+
+Returns the underlying Date object.
+
+<ResponseField name="return" type="Date">
+  The underlying Date instance
+</ResponseField>
+
+### getTime()
+
+```typescript
+getTime(): number
+```
+
+Returns the timestamp in milliseconds.
+
+<ResponseField name="return" type="number">
+  Timestamp in milliseconds
+</ResponseField>
+
+### getUnixTime()
+
+```typescript
+getUnixTime(): number
+```
+
+Returns the Unix timestamp in seconds.
+
+<ResponseField name="return" type="number">
+  Unix timestamp in seconds
+</ResponseField>
+
+### getISOString()
+
+```typescript
+getISOString(): string
+```
+
+Returns the ISO 8601 string representation.
+
+<ResponseField name="return" type="string">
+  ISO 8601 formatted string
+</ResponseField>
+
+### clone()
+
+```typescript
+clone(): HolyTime
+```
+
+Creates a copy of this HolyTime instance.
+
+<ResponseField name="return" type="HolyTime">
+  New HolyTime instance with the same time
+</ResponseField>
+
+### getRelativeTo()
+
+```typescript
+getRelativeTo(time: TimeResolvable): string
+```
+
+Returns a human-readable relative time string from this time to another time.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The target time
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Relative time string
+</ResponseField>
+
+### getRelativeFrom()
+
+```typescript
+getRelativeFrom(time: TimeResolvable): string
+```
+
+Returns a human-readable relative time string from another time to this time.
+
+<ParamField path="time" type="TimeResolvable" required>
+  The source time
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Relative time string
+</ResponseField>

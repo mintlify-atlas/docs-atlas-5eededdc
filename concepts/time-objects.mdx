@@ -1,0 +1,278 @@
+---
+title: Time Objects
+description: Learn how to create and manipulate HolyTime instances with a chainable, type-safe API
+---
+
+# Time Objects
+
+The `HolyTime` class is the core of the Holy Time library, providing a type-safe wrapper around JavaScript's Date object with a rich, chainable API.
+
+## Creating HolyTime Instances
+
+### Constructor
+
+Create a new `HolyTime` instance from various input types:
+
+```typescript
+import { HolyTime } from 'holy-time';
+
+// Current time
+const now = new HolyTime();
+
+// From a Date object
+const fromDate = new HolyTime(new Date());
+
+// From a timestamp
+const fromTimestamp = new HolyTime(1609459200000);
+
+// From another HolyTime instance
+const cloned = new HolyTime(now);
+```
+
+### Static Factory Methods
+
+<ParamField path="HolyTime.now()" type="() => HolyTime">
+  Returns a new HolyTime instance representing the current moment.
+</ParamField>
+
+```typescript
+const now = HolyTime.now();
+```
+
+<ParamField path="HolyTime.in()" type="(amount: number, unit?: HumanUnit) => HolyTime">
+  Creates a HolyTime instance for a future time relative to now.
+</ParamField>
+
+```typescript
+// 5 minutes from now
+const future = HolyTime.in(5, 'minutes');
+
+// 2 hours from now
+const later = HolyTime.in(2, 'hours');
+```
+
+## Instance vs Static Methods
+
+HolyTime provides both instance and static versions of most methods, allowing flexible usage patterns:
+
+### Instance Methods (Chainable)
+
+Instance methods modify the object in place and return `this`, enabling method chaining:
+
+```typescript
+const time = new HolyTime()
+  .add(5, 'days')
+  .subtract(2, 'hours')
+  .startOf('day');
+```
+
+### Static Methods (Pure)
+
+Static methods accept a time parameter and return a new HolyTime instance:
+
+```typescript
+const date = new Date();
+const future = HolyTime.add(date, 5, 'days');
+const past = HolyTime.subtract(date, 2, 'hours');
+```
+
+<Note>
+  Instance methods are mutable and return the same object. Use `clone()` if you need to preserve the original instance.
+</Note>
+
+## Chainable API
+
+The instance API is designed for chaining operations:
+
+```typescript
+const result = new HolyTime()
+  .startOf('month')
+  .add(15, 'days')
+  .set('hour', 12)
+  .set('minute', 0)
+  .set('second', 0);
+```
+
+### Arithmetic Operations
+
+<ParamField path="add()" type="(amount: number, unit?: HumanUnit) => this">
+  Adds time to the current instance. Default unit is milliseconds.
+</ParamField>
+
+<ParamField path="subtract()" type="(amount: number, unit?: HumanUnit) => this">
+  Subtracts time from the current instance. Default unit is milliseconds.
+</ParamField>
+
+```typescript
+const time = new HolyTime()
+  .add(1, 'years')
+  .add(3, 'months')
+  .subtract(5, 'days');
+```
+
+### Getting and Setting Values
+
+<ParamField path="get()" type="<T extends 'object' | GetUnit>(unit: T, timeZone?: TimeZone) => number | Record<GetUnit, number>">
+  Gets a specific unit value or all values as an object.
+</ParamField>
+
+```typescript
+const hour = time.get('hour');
+const month = time.get('month');
+
+// Get all values
+const all = time.get('object');
+// { millisecond: 0, second: 30, minute: 45, hour: 14, day: 15, week: 3, month: 3, year: 2024 }
+```
+
+<ParamField path="set()" type="(unit: GetUnit, value: number) => this">
+  Sets a specific unit to the given value.
+</ParamField>
+
+```typescript
+time.set('year', 2025)
+  .set('month', 12)
+  .set('day', 31);
+```
+
+## Comparison Methods
+
+All comparison methods have both instance and static versions:
+
+```typescript
+// Instance methods
+const isBefore = time.isBefore(otherTime);
+const isAfter = time.isAfter(otherTime);
+const isSame = time.isSame(otherTime, 'day');
+
+// Static methods
+const before = HolyTime.isBefore(timeA, timeB);
+const after = HolyTime.isAfter(timeA, timeB);
+const same = HolyTime.isSame(timeA, timeB, 'month');
+```
+
+<ParamField path="isFuture()" type="() => boolean">
+  Checks if the time is after the current moment.
+</ParamField>
+
+<ParamField path="isPast()" type="() => boolean">
+  Checks if the time is before the current moment.
+</ParamField>
+
+<ParamField path="isWeekend()" type="() => boolean">
+  Checks if the time falls on Saturday or Sunday.
+</ParamField>
+
+<ParamField path="isLeapYear()" type="(time: TimeResolvable) => boolean">
+  Checks if the year is a leap year.
+</ParamField>
+
+## Utility Methods
+
+<ParamField path="clone()" type="() => HolyTime">
+  Creates a copy of the current instance.
+</ParamField>
+
+```typescript
+const original = HolyTime.now();
+const copy = original.clone();
+
+copy.add(5, 'days');
+// original is unchanged
+```
+
+<ParamField path="getDate()" type="() => Date">
+  Returns the underlying JavaScript Date object.
+</ParamField>
+
+<ParamField path="getTime()" type="() => number">
+  Returns the timestamp in milliseconds since Unix epoch.
+</ParamField>
+
+<ParamField path="getUnixTime()" type="() => number">
+  Returns the timestamp in seconds since Unix epoch.
+</ParamField>
+
+<ParamField path="getISOString()" type="() => string">
+  Returns the ISO 8601 string representation.
+</ParamField>
+
+```typescript
+const time = HolyTime.now();
+
+time.getDate();       // Date object
+time.getTime();       // 1709568000000
+time.getUnixTime();   // 1709568000
+time.getISOString();  // '2024-03-04T12:00:00.000Z'
+```
+
+## Static Utility Methods
+
+<ParamField path="HolyTime.isValid()" type="(time: TimeResolvable) => boolean">
+  Checks if a time value is valid.
+</ParamField>
+
+```typescript
+HolyTime.isValid(new Date());           // true
+HolyTime.isValid('invalid');            // false
+HolyTime.isValid(1709568000000);        // true
+```
+
+<ParamField path="HolyTime.max()" type="(...times: TimeResolvable[]) => HolyTime">
+  Returns the latest time from the provided arguments.
+</ParamField>
+
+<ParamField path="HolyTime.min()" type="(...times: TimeResolvable[]) => HolyTime">
+  Returns the earliest time from the provided arguments.
+</ParamField>
+
+```typescript
+const latest = HolyTime.max(
+  new Date('2024-01-01'),
+  new Date('2024-12-31'),
+  new Date('2024-06-15')
+);
+
+const earliest = HolyTime.min(
+  HolyTime.now(),
+  HolyTime.in(5, 'days'),
+  HolyTime.in(-2, 'weeks')
+);
+```
+
+<ParamField path="HolyTime.isLeapYear()" type="(year: number) => boolean">
+  Static method to check if a specific year is a leap year.
+</ParamField>
+
+```typescript
+HolyTime.isLeapYear(2024);  // true
+HolyTime.isLeapYear(2023);  // false
+HolyTime.isLeapYear(2000);  // true
+HolyTime.isLeapYear(1900);  // false
+```
+
+<Warning>
+  The static `isLeapYear()` method requires a positive integer. It will throw a `TypeError` for invalid inputs.
+</Warning>
+
+## Constants
+
+HolyTime exposes useful constants as static properties:
+
+```typescript
+HolyTime.Units;      // { YEAR: 31536000000, MONTH: 2678400000, ... }
+HolyTime.TimeZones;  // Array of supported IANA timezone identifiers
+HolyTime.Days;       // ['Sunday', 'Monday', 'Tuesday', ...]
+HolyTime.Months;     // ['January', 'February', 'March', ...]
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Durations" icon="clock" href="/concepts/durations">
+    Learn about HolyDuration for time intervals
+  </Card>
+  <Card title="Formatting" icon="calendar" href="/concepts/formatting">
+    Format dates with custom patterns
+  </Card>
+</CardGroup>

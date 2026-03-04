@@ -1,0 +1,386 @@
+---
+title: Formatting
+description: Format dates and times with custom patterns and tokens
+---
+
+# Formatting
+
+Holy Time provides powerful formatting capabilities with a comprehensive set of tokens and support for custom format functions.
+
+## Basic Formatting
+
+<ParamField path="format()" type="(format: string, timeZone?: TimeZone) => string">
+  Formats the time using a pattern string with replacement tokens.
+</ParamField>
+
+```typescript
+import { HolyTime } from 'holy-time';
+
+const time = new HolyTime(new Date('2024-03-04T14:30:45'));
+
+time.format('YYYY-MM-DD');           // '2024-03-04'
+time.format('HH:mm:ss');             // '14:30:45'
+time.format('MMMM DD, YYYY');        // 'March 04, 2024'
+time.format('h:mm A');               // '2:30 PM'
+```
+
+### Static Format Method
+
+You can also use the static method to format any time value:
+
+```typescript
+HolyTime.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
+HolyTime.format(1709568645000, 'MMM DD, YYYY');
+HolyTime.format(someHolyTimeInstance, 'DD/MM/YY');
+```
+
+## Format Tokens
+
+Holy Time uses the `FORMAT_REGEX` pattern to recognize these tokens:
+
+```typescript
+/\[(?<escaped>[^\]]+)]|Y{4}|Y{2}|M{1,4}|D{1,4}|d{1,4}|H{1,2}|h{1,2}|m{1,2}|s{1,2}|a|A|O{1,2}|TZ/g
+```
+
+### Year Tokens
+
+<ParamField path="YYYY" type="string">
+  Four-digit year
+</ParamField>
+
+<ParamField path="YY" type="string">
+  Two-digit year
+</ParamField>
+
+```typescript
+time.format('YYYY');  // '2024'
+time.format('YY');    // '24'
+```
+
+### Month Tokens
+
+<ParamField path="M" type="string">
+  Month number (1-12)
+</ParamField>
+
+<ParamField path="MM" type="string">
+  Month number with leading zero (01-12)
+</ParamField>
+
+<ParamField path="MMM" type="string">
+  Short month name (Jan, Feb, Mar, ...)
+</ParamField>
+
+<ParamField path="MMMM" type="string">
+  Full month name (January, February, March, ...)
+</ParamField>
+
+```typescript
+time.format('M');     // '3'
+time.format('MM');    // '03'
+time.format('MMM');   // 'Mar'
+time.format('MMMM');  // 'March'
+```
+
+### Day Tokens
+
+<ParamField path="D" type="string">
+  Day of month (1-31)
+</ParamField>
+
+<ParamField path="DD" type="string">
+  Day of month with leading zero (01-31)
+</ParamField>
+
+<ParamField path="DDDD" type="string">
+  Full day name (Monday, Tuesday, ...)
+</ParamField>
+
+```typescript
+time.format('D');     // '4'
+time.format('DD');    // '04'
+time.format('DDDD');  // 'Monday'
+```
+
+### Hour Tokens
+
+<ParamField path="H" type="string">
+  Hour in 24-hour format (0-23)
+</ParamField>
+
+<ParamField path="HH" type="string">
+  Hour in 24-hour format with leading zero (00-23)
+</ParamField>
+
+<ParamField path="h" type="string">
+  Hour in 12-hour format (1-12)
+</ParamField>
+
+<ParamField path="hh" type="string">
+  Hour in 12-hour format with leading zero (01-12)
+</ParamField>
+
+```typescript
+const morning = new HolyTime(new Date('2024-03-04T09:30:00'));
+morning.format('H');   // '9'
+morning.format('HH');  // '09'
+morning.format('h');   // '9'
+morning.format('hh');  // '09'
+
+const afternoon = new HolyTime(new Date('2024-03-04T14:30:00'));
+afternoon.format('H');   // '14'
+afternoon.format('HH');  // '14'
+afternoon.format('h');   // '2'
+afternoon.format('hh');  // '02'
+```
+
+### Minute and Second Tokens
+
+<ParamField path="m" type="string">
+  Minutes (0-59)
+</ParamField>
+
+<ParamField path="mm" type="string">
+  Minutes with leading zero (00-59)
+</ParamField>
+
+<ParamField path="s" type="string">
+  Seconds (0-59)
+</ParamField>
+
+<ParamField path="ss" type="string">
+  Seconds with leading zero (00-59)
+</ParamField>
+
+```typescript
+time.format('m:s');     // '30:45'
+time.format('mm:ss');   // '30:45'
+```
+
+### AM/PM Tokens
+
+<ParamField path="A" type="string">
+  Uppercase AM/PM
+</ParamField>
+
+<ParamField path="a" type="string">
+  Lowercase am/pm
+</ParamField>
+
+```typescript
+const morning = new HolyTime(new Date('2024-03-04T09:30:00'));
+morning.format('h:mm A');  // '9:30 AM'
+morning.format('h:mm a');  // '9:30 am'
+
+const evening = new HolyTime(new Date('2024-03-04T18:30:00'));
+evening.format('h:mm A');  // '6:30 PM'
+evening.format('h:mm a');  // '6:30 pm'
+```
+
+### Timezone Tokens
+
+<ParamField path="O" type="string">
+  Short timezone offset (GMT+5 or GMT-5:30)
+</ParamField>
+
+<ParamField path="OO" type="string">
+  Long timezone offset (GMT+05:00)
+</ParamField>
+
+<ParamField path="TZ" type="string">
+  IANA timezone identifier
+</ParamField>
+
+```typescript
+time.format('O');   // 'GMT+0' or 'GMT-5'
+time.format('OO');  // 'GMT+00:00' or 'GMT-05:00'
+time.format('TZ');  // 'America/New_York' or current system timezone
+```
+
+## Escaping Text
+
+Use square brackets to include literal text in your format:
+
+```typescript
+time.format('[Today is] DDDD, MMMM DD, YYYY');
+// 'Today is Monday, March 04, 2024'
+
+time.format('[at] HH:mm [on] DD/MM/YYYY');
+// 'at 14:30 on 04/03/2024'
+
+time.format('YYYY [Year]');
+// '2024 Year'
+```
+
+<Note>
+  Text inside `[` and `]` is treated as literal text and won't be replaced by tokens.
+</Note>
+
+## Common Format Patterns
+
+<Tabs>
+  <Tab title="ISO 8601">
+    ```typescript
+    time.format('YYYY-MM-DDTHH:mm:ss');
+    // '2024-03-04T14:30:45'
+    ```
+  </Tab>
+  <Tab title="US Format">
+    ```typescript
+    time.format('MM/DD/YYYY h:mm A');
+    // '03/04/2024 2:30 PM'
+    ```
+  </Tab>
+  <Tab title="European Format">
+    ```typescript
+    time.format('DD/MM/YYYY HH:mm');
+    // '04/03/2024 14:30'
+    ```
+  </Tab>
+  <Tab title="Long Format">
+    ```typescript
+    time.format('DDDD, MMMM DD, YYYY [at] h:mm A');
+    // 'Monday, March 04, 2024 at 2:30 PM'
+    ```
+  </Tab>
+</Tabs>
+
+## Custom Format Functions
+
+For complete control, pass a function instead of a string:
+
+<ParamField path="format()" type="(format: (time: HolyTime) => string, timeZone?: TimeZone) => string">
+  Uses a custom function to generate the formatted string.
+</ParamField>
+
+```typescript
+const customFormat = (time: HolyTime) => {
+  const hour = time.get('hour');
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  return `${greeting}! It's ${time.format('h:mm A')}`;
+};
+
+time.format(customFormat);
+// 'Good afternoon! It\'s 2:30 PM'
+```
+
+### Advanced Custom Formatting
+
+```typescript
+const formatWithOrdinal = (time: HolyTime) => {
+  const day = time.get('day');
+  const suffix = ['th', 'st', 'nd', 'rd'];
+  const v = day % 100;
+  const ordinal = suffix[(v - 20) % 10] || suffix[v] || suffix[0];
+  
+  return `${time.format('DDDD')}, ${time.format('MMMM')} ${day}${ordinal}, ${time.format('YYYY')}`;
+};
+
+const time = new HolyTime(new Date('2024-03-04'));
+time.format(formatWithOrdinal);
+// 'Monday, March 4th, 2024'
+
+const other = new HolyTime(new Date('2024-03-21'));
+other.format(formatWithOrdinal);
+// 'Thursday, March 21st, 2024'
+```
+
+## Timezone-Aware Formatting
+
+All format methods accept an optional timezone parameter:
+
+```typescript
+const time = HolyTime.now();
+
+// Format in UTC
+time.format('YYYY-MM-DD HH:mm:ss', 'UTC');
+
+// Format in specific timezone
+time.format('YYYY-MM-DD HH:mm:ss', 'America/New_York');
+time.format('YYYY-MM-DD HH:mm:ss', 'Europe/London');
+time.format('YYYY-MM-DD HH:mm:ss', 'Asia/Tokyo');
+
+// Include timezone in output
+time.format('YYYY-MM-DD HH:mm:ss TZ', 'America/New_York');
+// '2024-03-04 14:30:45 America/New_York'
+```
+
+<Info>
+  See the [Timezones](/concepts/timezones) page for more information on timezone support.
+</Info>
+
+## Relative Time Formatting
+
+<ParamField path="HolyTime.relativeFromTo()" type="(timeA: TimeResolvable, timeB: TimeResolvable) => string">
+  Returns a human-readable string describing the relative time between two dates.
+</ParamField>
+
+```typescript
+const past = new Date('2024-03-01');
+const future = new Date('2024-03-10');
+
+HolyTime.relativeFromTo(past, future);
+// 'in 9 days'
+
+HolyTime.relativeFromTo(future, past);
+// '9 days ago'
+```
+
+### Instance Methods
+
+<ParamField path="getRelativeTo()" type="(time: TimeResolvable) => string">
+  Gets the relative time from this instance to another time.
+</ParamField>
+
+<ParamField path="getRelativeFrom()" type="(time: TimeResolvable) => string">
+  Gets the relative time from another time to this instance.
+</ParamField>
+
+```typescript
+const now = HolyTime.now();
+const birthday = new Date('2024-12-25');
+
+now.getRelativeTo(birthday);
+// 'in 9 months'
+
+birthday.getRelativeFrom(now);
+// 'in 9 months ago' (equivalent)
+```
+
+### Relative Time Examples
+
+```typescript
+const now = new Date();
+
+// Recent past
+HolyTime.relativeFromTo(new Date(Date.now() - 5000), now);
+// 'a few seconds ago'
+
+HolyTime.relativeFromTo(new Date(Date.now() - 60000), now);
+// 'a minute ago'
+
+HolyTime.relativeFromTo(new Date(Date.now() - 3600000), now);
+// 'an hour ago'
+
+// Recent future
+HolyTime.relativeFromTo(now, new Date(Date.now() + 3600000));
+// 'in an hour'
+
+HolyTime.relativeFromTo(now, new Date(Date.now() + 86400000));
+// 'in a day'
+```
+
+<Warning>
+  Relative time formatting uses approximate values for months (31 days) and years (365 days).
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Timezones" icon="globe" href="/concepts/timezones">
+    Learn about timezone support and conversions
+  </Card>
+  <Card title="Time Objects" icon="clock" href="/concepts/time-objects">
+    Explore HolyTime instance methods
+  </Card>
+</CardGroup>

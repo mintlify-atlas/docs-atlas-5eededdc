@@ -1,80 +1,303 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get up and running with Holy Time in minutes with practical examples
 ---
 
-## Get started in three steps
+# Quickstart Guide
 
-Get your documentation site running locally and make your first customization.
+Learn the basics of Holy Time with hands-on examples covering the most common use cases.
 
-### Step 1: Set up your local environment
+## Basic Usage
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Steps>
+  <Step title="Import Holy Time">
+    Start by importing the library into your project:
 
-### Step 2: Deploy your changes
+    ```ts
+    import HolyTime from 'holy-time'
+    ```
+  </Step>
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+  <Step title="Create a HolyTime instance">
+    You can create a `HolyTime` instance in several ways:
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    ```ts
+    // Current date and time
+    const now = HolyTime.now()
+    const alsoNow = new HolyTime()
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    // From a date string
+    const date = new HolyTime('2022-10-20')
 
-### Step 3: Go live
+    // From a Date object
+    const fromDate = new HolyTime(new Date())
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    // From a timestamp
+    const fromTimestamp = new HolyTime(1666224000000)
+    ```
+  </Step>
 
-## Next steps
+  <Step title="Manipulate dates">
+    Use the chainable API to add or subtract time:
 
-Now that you have your docs running, explore these key features:
+    ```ts
+    const future = HolyTime
+      .in(4, 'days')
+      .add(2, 'weeks')
+      .subtract(4, 'minutes')
 
-<CardGroup cols={2}>
+    console.log(future.format('YYYY-MM-DD'))
+    ```
+  </Step>
+</Steps>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+## Common Operations
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+### Adding and Subtracting Time
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+Holy Time provides intuitive methods for time arithmetic:
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+```ts
+// Add time (static method)
+const tomorrow = HolyTime.add(new Date(), 1, 'days')
 
-</CardGroup>
+// Add time (instance method - mutable)
+const date = new HolyTime('2022-10-20')
+date.add(2, 'weeks').add(3, 'hours')
+
+// Subtract time
+const yesterday = HolyTime.subtract(new Date(), 1, 'days')
+const past = new HolyTime().subtract(30, 'minutes')
+
+// Relative time from now
+const inFourDays = HolyTime.in(4, 'days')
+```
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+Instance methods (`add`, `subtract`) mutate the original `HolyTime` object. Use `clone()` if you need immutability.
 </Note>
+
+### Working with Boundaries
+
+Get the start or end of any time period:
+
+```ts
+// Start of time periods
+const startOfDay = HolyTime.startOf('day')
+const startOfWeek = HolyTime.startOf('week')
+const startOfMonth = HolyTime.startOf('month')
+const startOfYear = HolyTime.startOf('year')
+
+// End of time periods
+const endOfDay = HolyTime.endOf('day')
+const endOfMonth = HolyTime.endOf('month')
+
+// With timezone support
+const startOfDayNY = HolyTime.startOf('day', new Date(), 'America/New_York')
+
+// Get the next period
+const nextYear = HolyTime.next('year')
+const nextMonth = new HolyTime().next('month')
+```
+
+### Comparing Dates
+
+Check relationships between dates:
+
+```ts
+// Check if dates are equal
+const isSame = HolyTime.isSame(
+  new Date('2022-10-20'),
+  new Date('2022-10-20')
+) // true
+
+// Compare with specific precision
+const isSameDay = new HolyTime('2022-10-20 14:30')
+  .isSame('2022-10-20 16:45', 'day') // true
+
+// Before/after comparisons
+const isAfter = HolyTime.isAfter(dateA, dateB)
+const isBefore = new HolyTime(dateA).isBefore(dateB)
+
+// Future/past checks
+const isFuture = HolyTime.isFuture(someDate)
+const isPast = new HolyTime('2022-01-01').isPast() // true
+
+// Find min/max dates
+const latest = HolyTime.max(
+  1666224000000,
+  HolyTime.next('year'),
+  new Date()
+)
+const earliest = HolyTime.min(dateA, dateB, dateC)
+```
+
+### Querying Properties
+
+Check date properties and characteristics:
+
+```ts
+// Check if weekend
+const isWeekend = HolyTime.isWeekend(new Date())
+const willBeWeekend = HolyTime
+  .in(4, 'days')
+  .isWeekend()
+
+// Check leap year
+const isLeapYear = HolyTime.isLeapYear(2024) // true
+const dateIsLeapYear = new HolyTime('2024-02-29').isLeapYear() // true
+
+// Validate dates
+const isValid = HolyTime.isValid('2022-10-20') // true
+const isInvalid = HolyTime.isValid('invalid-date') // false
+```
+
+### Working with Durations
+
+Calculate and manipulate time differences:
+
+```ts
+import { HolyDuration } from 'holy-time'
+
+// Calculate duration between two dates
+const duration = HolyTime.between(
+  HolyTime.add(HolyTime.startOf('day'), 2, 'hours'),
+  HolyTime.now()
+)
+const hours = duration.in('hours')
+
+// Create a duration
+const twoHours = HolyTime.duration(2, 'hours')
+  .add(30, 'minutes')
+  .in('seconds') // 9000
+
+// Time since a date
+const timeSince = HolyTime.since(new Date('2022-01-01'))
+console.log(timeSince.in('days'))
+
+// Format durations
+const formatted = duration.format('short') // "2h 30m 15s"
+const longFormat = duration.format('long') // "2 hours, 30 minutes and 15 seconds"
+```
+
+### Formatting Dates
+
+Format dates with custom patterns:
+
+```ts
+const date = new HolyTime('2022-10-20 14:30:45')
+
+// Common formats
+date.format('YYYY-MM-DD') // "2022-10-20"
+date.format('YYYY-MM-DD HH:mm:ss') // "2022-10-20 14:30:45"
+date.format('MMM DD, YYYY') // "Oct 20, 2022"
+date.format('MMMM DD, YYYY') // "October 20, 2022"
+date.format('hh:mm A') // "02:30 PM"
+date.format('DDDD, MMMM DD, YYYY') // "Thursday, October 20, 2022"
+
+// With timezone
+const formatted = HolyTime.format(
+  new Date(),
+  'YYYY-MM-DD HH:mm:ss TZ',
+  'America/New_York'
+)
+
+// Custom formatter function
+const custom = HolyTime.format(
+  new Date(),
+  (time) => `Year: ${time.get('year')}, Month: ${time.get('month')}`
+)
+
+// Relative time
+const relative = HolyTime.relativeFromTo(
+  HolyTime.now(),
+  HolyTime.in(2, 'hours')
+) // "in 2 hours"
+
+const relativeInstance = new HolyTime('2022-01-01')
+  .getRelativeFrom(new Date()) // "4 years ago"
+```
+
+### Getting and Setting Values
+
+Access and modify specific date components:
+
+```ts
+const date = new HolyTime('2022-10-20 14:30:45')
+
+// Get individual values
+const year = date.get('year') // 2022
+const month = date.get('month') // 10
+const day = date.get('day') // 20
+const hour = date.get('hour') // 14
+
+// Get all values as an object
+const all = date.get('object')
+// { millisecond: 0, second: 45, minute: 30, hour: 14, day: 20, week: 42, month: 10, year: 2022 }
+
+// Set values (mutable)
+date.set('year', 2025)
+date.set('month', 12)
+date.set('day', 25)
+
+// Get native values
+const timestamp = date.getTime() // 1703513445000
+const unixTime = date.getUnixTime() // 1703513445
+const isoString = date.getISOString() // "2025-12-25T14:30:45.000Z"
+const nativeDate = date.getDate() // Date object
+```
+
+## Complete Example
+
+Here's a practical example combining multiple features:
+
+```ts
+import HolyTime from 'holy-time'
+
+// Check if a meeting is happening soon
+const meetingTime = new HolyTime('2026-03-05 15:00:00')
+const now = HolyTime.now()
+
+if (meetingTime.isFuture()) {
+  const timeUntil = HolyTime.between(now, meetingTime)
+  const hours = timeUntil.in('hours')
+  
+  if (hours < 1) {
+    console.log('Meeting starts in', timeUntil.format('short'))
+  } else if (hours < 24) {
+    console.log('Meeting is today at', meetingTime.format('hh:mm A'))
+  } else {
+    console.log('Meeting is on', meetingTime.format('MMMM DD at hh:mm A'))
+  }
+} else {
+  const timeAgo = HolyTime.between(meetingTime, now)
+  console.log('Meeting ended', timeAgo.format('long'), 'ago')
+}
+
+// Check if a date falls on a weekend
+if (meetingTime.isWeekend()) {
+  console.log('Note: This meeting is scheduled for a weekend')
+}
+```
+
+<Tip>
+Remember that instance methods like `add()`, `subtract()`, and `set()` mutate the original object. Use `clone()` to create a copy before modifying:
+
+```ts
+const original = HolyTime.now()
+const modified = original.clone().add(1, 'days')
+```
+</Tip>
+
+## Next Steps
+
+Now that you understand the basics, explore more advanced features:
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="book">
+    Complete documentation of all available methods and types
+  </Card>
+  <Card title="Advanced Usage" icon="wand-magic-sparkles">
+    Learn about timezone handling, custom formatting, and more
+  </Card>
+</CardGroup>

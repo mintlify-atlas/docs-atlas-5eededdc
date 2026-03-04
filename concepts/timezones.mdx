@@ -1,0 +1,338 @@
+---
+title: Timezones
+description: Work with timezones, UTC operations, and timezone conversions
+---
+
+# Timezones
+
+Holy Time provides comprehensive timezone support using IANA timezone identifiers, enabling accurate time calculations across different regions.
+
+## Timezone Support
+
+Holy Time supports all standard IANA timezone identifiers through the `TIMEZONES` constant:
+
+```typescript
+import { HolyTime } from 'holy-time';
+
+// Access all supported timezones
+HolyTime.TimeZones;
+// ['Africa/Abidjan', 'Africa/Accra', 'America/New_York', 'Asia/Tokyo', 'Europe/London', 'UTC', ...]
+```
+
+### Available Timezones
+
+The library includes 495 IANA timezone identifiers covering:
+
+- Africa (e.g., `'Africa/Cairo'`, `'Africa/Johannesburg'`)
+- Americas (e.g., `'America/New_York'`, `'America/Los_Angeles'`, `'America/Chicago'`)
+- Antarctica (e.g., `'Antarctica/McMurdo'`)
+- Arctic (e.g., `'Arctic/Longyearbyen'`)
+- Asia (e.g., `'Asia/Tokyo'`, `'Asia/Shanghai'`, `'Asia/Dubai'`)
+- Atlantic (e.g., `'Atlantic/Azores'`, `'Atlantic/Bermuda'`)
+- Australia (e.g., `'Australia/Sydney'`, `'Australia/Melbourne'`)
+- Europe (e.g., `'Europe/London'`, `'Europe/Paris'`, `'Europe/Berlin'`)
+- Indian (e.g., `'Indian/Maldives'`)
+- Pacific (e.g., `'Pacific/Auckland'`, `'Pacific/Honolulu'`)
+- UTC
+
+<Info>
+  The complete list of 495 timezones is available in the source code at `src/constants.ts:65-495`.
+</Info>
+
+## Getting the Current Timezone
+
+<ParamField path="HolyTime.getTimeZone()" type="() => TimeZone">
+  Returns the system's current timezone as an IANA identifier.
+</ParamField>
+
+```typescript
+const currentTz = HolyTime.getTimeZone();
+// 'America/New_York', 'Europe/London', etc. (depends on system settings)
+```
+
+## UTC Operations
+
+Many methods accept an optional timezone parameter. Use `'UTC'` for UTC operations:
+
+```typescript
+const time = HolyTime.now();
+
+// Get values in UTC
+const utcHour = time.get('hour', 'UTC');
+const utcDay = time.get('day', 'UTC');
+
+// Format in UTC
+time.format('YYYY-MM-DD HH:mm:ss', 'UTC');
+// '2024-03-04 19:30:45'
+
+// Start of day in UTC
+const utcDayStart = time.startOf('day', 'UTC');
+```
+
+### UTC vs Local Time
+
+```typescript
+const time = new HolyTime(new Date('2024-03-04T14:30:00'));
+
+// Local time (depends on system timezone)
+time.format('YYYY-MM-DD HH:mm:ss');
+// '2024-03-04 14:30:00' (if system is in that timezone)
+
+// UTC time
+time.format('YYYY-MM-DD HH:mm:ss', 'UTC');
+// '2024-03-04 19:30:00' (if local timezone is EST, UTC-5)
+```
+
+## Timezone Conversions
+
+All methods that support timezone parameters perform automatic conversion:
+
+### Format with Timezone
+
+```typescript
+const time = HolyTime.now();
+
+// Same moment in different timezones
+time.format('YYYY-MM-DD HH:mm:ss', 'America/New_York');
+// '2024-03-04 14:30:00'
+
+time.format('YYYY-MM-DD HH:mm:ss', 'Europe/London');
+// '2024-03-04 19:30:00'
+
+time.format('YYYY-MM-DD HH:mm:ss', 'Asia/Tokyo');
+// '2024-03-05 04:30:00'
+```
+
+### Get Values in Different Timezones
+
+<ParamField path="get()" type="(unit: GetUnit, timeZone?: TimeZone) => number">
+  Gets a time component value in the specified timezone.
+</ParamField>
+
+```typescript
+const time = new HolyTime(new Date('2024-03-04T23:30:00Z'));
+
+// Hour in different timezones
+time.get('hour', 'UTC');            // 23
+time.get('hour', 'America/New_York'); // 18 (UTC-5)
+time.get('hour', 'Asia/Tokyo');     // 8 (next day, UTC+9)
+
+// Day can change across timezones
+time.get('day', 'UTC');             // 4
+time.get('day', 'Asia/Tokyo');      // 5
+```
+
+## startOf and endOf with Timezones
+
+Timezone parameters ensure accurate start/end calculations:
+
+<ParamField path="startOf()" type="(unit: IntervalUnit, timeZone?: TimeZone) => HolyTime">
+  Returns the start of the interval in the specified timezone.
+</ParamField>
+
+<ParamField path="endOf()" type="(unit: IntervalUnit, timeZone?: TimeZone) => HolyTime">
+  Returns the end of the interval in the specified timezone.
+</ParamField>
+
+```typescript
+const time = new HolyTime(new Date('2024-03-04T14:30:00'));
+
+// Start of day in different timezones
+time.startOf('day', 'UTC');
+time.startOf('day', 'America/New_York');
+time.startOf('day', 'Asia/Tokyo');
+
+// End of month in specific timezone
+time.endOf('month', 'Europe/Paris');
+```
+
+### Static Methods with Timezone
+
+```typescript
+// Start of day in New York
+const nyDayStart = HolyTime.startOf(
+  'day',
+  new Date('2024-03-04T14:30:00'),
+  'America/New_York'
+);
+
+// End of week in Tokyo
+const tokyoWeekEnd = HolyTime.endOf(
+  'week',
+  new Date(),
+  'Asia/Tokyo'
+);
+```
+
+<Note>
+  The `startOf()` and `endOf()` methods with timezone support are at `src/time.ts:218-289` and `src/time.ts:295-359`.
+</Note>
+
+## Timezone in Formatting
+
+### Display Timezone Information
+
+```typescript
+const time = HolyTime.now();
+
+// Short offset
+time.format('YYYY-MM-DD HH:mm:ss O', 'America/New_York');
+// '2024-03-04 14:30:00 GMT-5'
+
+// Long offset
+time.format('YYYY-MM-DD HH:mm:ss OO', 'Europe/Paris');
+// '2024-03-04 20:30:00 GMT+01:00'
+
+// Timezone identifier
+time.format('YYYY-MM-DD HH:mm:ss TZ', 'Asia/Tokyo');
+// '2024-03-05 04:30:00 Asia/Tokyo'
+
+// Combined
+time.format('YYYY-MM-DD HH:mm:ss (TZ, OO)', 'America/Los_Angeles');
+// '2024-03-04 11:30:00 (America/Los_Angeles, GMT-08:00)'
+```
+
+### Timezone Offset Formatting
+
+The library provides two offset formats:
+
+<ParamField path="O" type="string">
+  Short format: `GMT+5` or `GMT-5:30`
+</ParamField>
+
+<ParamField path="OO" type="string">
+  Long format: `GMT+05:00` or `GMT-05:30`
+</ParamField>
+
+```typescript
+time.format('O');   // 'GMT-5' (short, omits minutes if zero)
+time.format('OO');  // 'GMT-05:00' (long, always includes minutes)
+```
+
+## Timezone Aliases
+
+The `TIMEZONE_MAP` constant provides common timezone aliases:
+
+```typescript
+// Currently supported alias
+const TIMEZONE_MAP = {
+  'UTC+0': 'UTC',
+} as const;
+```
+
+<Info>
+  More timezone aliases may be added in future versions (see `src/constants.ts:498`).
+</Info>
+
+## Working with Multiple Timezones
+
+### Meeting Scheduler Example
+
+```typescript
+const meetingTime = new HolyTime(new Date('2024-03-15T14:00:00'));
+
+console.log('Meeting times:');
+console.log('New York:', meetingTime.format('h:mm A', 'America/New_York'));
+console.log('London:', meetingTime.format('h:mm A', 'Europe/London'));
+console.log('Tokyo:', meetingTime.format('h:mm A', 'Asia/Tokyo'));
+console.log('Sydney:', meetingTime.format('h:mm A', 'Australia/Sydney'));
+```
+
+### Business Hours Check
+
+```typescript
+function isDuringBusinessHours(time: HolyTime, timezone: TimeZone): boolean {
+  const hour = time.get('hour', timezone);
+  const day = time.get('day', timezone);
+  
+  // Monday-Friday, 9 AM - 5 PM
+  const isWeekday = day >= 1 && day <= 5;
+  const isBusinessHour = hour >= 9 && hour < 17;
+  
+  return isWeekday && isBusinessHour;
+}
+
+const now = HolyTime.now();
+isDuringBusinessHours(now, 'America/New_York');
+isDuringBusinessHours(now, 'Europe/London');
+```
+
+### Timezone-Aware Next Day
+
+```typescript
+// Get the start of tomorrow in Tokyo time
+const tokyoTomorrow = HolyTime.next('day', new Date(), 'Asia/Tokyo');
+
+// Format it in multiple timezones
+console.log('Tokyo:', tokyoTomorrow.format('YYYY-MM-DD HH:mm', 'Asia/Tokyo'));
+console.log('UTC:', tokyoTomorrow.format('YYYY-MM-DD HH:mm', 'UTC'));
+```
+
+<Warning>
+  When working with timezones, be aware of daylight saving time (DST) transitions. The library handles these automatically using the browser's Intl API.
+</Warning>
+
+## Best Practices
+
+### Always Specify Timezone for Business Logic
+
+```typescript
+// Good: Explicit timezone
+const dayStart = HolyTime.startOf('day', new Date(), 'America/New_York');
+
+// Avoid: Implicit local timezone (varies by user)
+const dayStart = HolyTime.startOf('day', new Date());
+```
+
+### Store in UTC, Display in Local
+
+```typescript
+// Store as UTC timestamp
+const timestamp = HolyTime.now().getTime();
+
+// Display in user's timezone
+const userTz = HolyTime.getTimeZone();
+const displayTime = new HolyTime(timestamp).format('YYYY-MM-DD HH:mm', userTz);
+```
+
+### Use IANA Identifiers
+
+```typescript
+// Good: IANA identifier
+time.format('YYYY-MM-DD', 'America/New_York');
+
+// Avoid: Abbreviations (ambiguous)
+// 'EST' could mean different things
+```
+
+## Internal Implementation
+
+The timezone conversion is handled by the private `adjustToTimeZone()` method:
+
+```typescript
+private static adjustToTimeZone(date: Date, timeZone?: TimeZone): Date {
+  if (!timeZone) {
+    return date;
+  }
+
+  const newTimeZone =
+    TIMEZONE_MAP[timeZone as keyof typeof TIMEZONE_MAP] ?? timeZone;
+
+  return new Date(date.toLocaleString('en-US', { timeZone: newTimeZone }));
+}
+```
+
+<Info>
+  See `src/time.ts:35-44` for the implementation details.
+</Info>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Formatting" icon="calendar" href="/concepts/formatting">
+    Learn about format tokens and patterns
+  </Card>
+  <Card title="Time Objects" icon="clock" href="/concepts/time-objects">
+    Explore HolyTime methods and API
+  </Card>
+</CardGroup>
